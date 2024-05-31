@@ -18,5 +18,6 @@ class Colores {
       900: Color(0xFF005282),
     },
   );
+  static const Color color3 = Color(0xFF29AFB0);
   static const Color color4 = Color(0xFF0A4A6E);
 }

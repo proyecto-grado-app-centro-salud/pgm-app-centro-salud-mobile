@@ -1,8 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/pages/registrar_ficha_medica.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
+import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 
-class _AttentionScheduleState extends State<AttentionSchedule> {
+class GestionFichasMedicas extends StatefulWidget {
+  const GestionFichasMedicas({super.key});
+
+  @override
+  State<GestionFichasMedicas> createState() => _GestionFichasMedicasState();
+}
+
+class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
   List turnosAtencionMedica = [
     [1, "A12", "turno mañana", "medico1", "ginecologia"],
     [2, "A15", "turno mañana", "medico3", "neurologia"],
@@ -35,7 +45,26 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
           child: Column(
             children: [
               Container(
-                height: 200,
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Center(
+                        child: Text("Gestion mis fichas medicas",
+                            style: TextStyle(
+                                color: Colores.color4,
+                                fontWeight: FontWeight.bold))),
+                    ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colores.color3),textStyle:MaterialStateProperty.all(TextStyle(color: Colors.white))),
+                      child: Text(
+                        "Registrar ficha medica",
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, FadeRoute(page: RegistrarFichaMedica()));
+                      },
+                    )
+                  ],
+                ),
               ),
               Container(
                   height: 600,
@@ -121,6 +150,26 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
                                                   color: Colors.white))),
                                     ],
                                   ),
+                                  Flex(
+                                    direction: Axis.horizontal,
+                                    children: [
+                                      /*Expanded(
+                                          flex: 1,
+                                          child: IconButton(
+                                            icon: Icon(Icons.edit),
+                                            onPressed: () {},
+                                          )),*/
+                                      Expanded(
+                                          flex: 1,
+                                          child: Align(
+                                            alignment: AlignmentDirectional.centerEnd,
+                                            child: IconButton(
+                                              icon: Icon(Icons.delete,color: Colors.white),
+                                              onPressed: () {},
+                                            ),
+                                          ))
+                                    ],
+                                  ),
                                 ],
                               )),
                         );
@@ -128,12 +177,6 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
             ],
           ),
         ));
+    ;
   }
-}
-
-class AttentionSchedule extends StatefulWidget {
-  const AttentionSchedule({super.key});
-
-  @override
-  State<AttentionSchedule> createState() => _AttentionScheduleState();
 }
