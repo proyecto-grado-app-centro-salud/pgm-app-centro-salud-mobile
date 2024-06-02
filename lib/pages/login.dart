@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:proyecto_grado_flutter/pages/menu.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_title.dart';
@@ -6,6 +10,8 @@ import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 import '../util/colores.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -18,8 +24,33 @@ class _LoginState extends State<Login> {
   TextEditingController usuario = TextEditingController();
   TextEditingController password = TextEditingController();
   _signInWithEmailAndPassword() {
-    Navigator.pop(context);
-    Navigator.push(context, FadeRoute(page: const Menu()));
+    http.post(
+        Uri.https(dotenv.env["API_URL"]!,
+            "/api/microservicio-gestion-usuarios/auth/sign-in"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "email": usuario.text,
+          "password": password.text
+        })).then((response) async {
+          print(response);
+          print(response.statusCode);
+      if (response.statusCode==200) {
+        var datosUsuario = (json.decode(response.body));
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        preferences.setString("token", datosUsuario["token"].toString());
+        Navigator.pop(context);
+        Navigator.push(context, FadeRoute(page: const Menu()));
+      } else {
+        ArtSweetAlert.show(
+            context: context,
+            artDialogArgs: ArtDialogArgs(
+                type: ArtSweetAlertType.warning,
+                title: "Error!",
+                text: "Credenciales erroneas"));
+      }
+    });
   }
 
   @override
@@ -48,15 +79,14 @@ class _LoginState extends State<Login> {
                 height: 200 * fem,
                 margin: EdgeInsets.only(bottom: 50),
                 decoration: BoxDecoration(
-                    color: Colors.transparent,
+                  color: Colors.transparent,
                 ),
                 child: Container(
                   // frame3Aoq (1:5)
                   width: double.infinity,
                   height: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10)
-                  ),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     // imagen1jrw (1:9)
                     child: SizedBox(
@@ -85,8 +115,8 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                        "Iniciar sesion",
-                        style: TextStyle(color: Colors.white),
+                      "Iniciar sesion",
+                      style: TextStyle(color: Colors.white),
                     ),
                     //CustomTitle(titulo: "Iniciar sesion"),
                     SizedBox(
