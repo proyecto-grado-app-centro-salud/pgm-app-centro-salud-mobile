@@ -2,6 +2,7 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/pages/attention_schedules.dart';
 import 'package:proyecto_grado_flutter/pages/doctor_team.dart';
+import 'package:proyecto_grado_flutter/pages/gestion_fichas_medicas.dart';
 import 'package:proyecto_grado_flutter/pages/home_page.dart';
 import 'package:proyecto_grado_flutter/pages/login.dart';
 import 'package:proyecto_grado_flutter/pages/medical_recort_managment.dart';
@@ -118,6 +119,15 @@ class _NavDrawerState extends State<NavDrawer> {
                   context, FadeRoute(page: const AttentionSchedule()))
             },
           ),
+          ListTile(
+            leading: Icon(Icons.book),
+            title: Text('Gestion de fichas medicas'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context,
+                  FadeRoute(page: const GestionFichasMedicas()))
+            },
+          ),
           (!logeado)
               ? Column(
                   children: [
@@ -148,7 +158,7 @@ class _NavDrawerState extends State<NavDrawer> {
                       onTap: () => {
                         Navigator.pop(context),
                         Navigator.push(context,
-                            FadeRoute(page: const MedicalRecordManagment()))
+                            FadeRoute(page: const GestionFichasMedicas()))
                       },
                     ),
                     ListTile(

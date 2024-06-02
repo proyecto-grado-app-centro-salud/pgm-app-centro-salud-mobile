@@ -1,10 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
+import 'package:http/http.dart' as http;
 
 class _AttentionScheduleState extends State<AttentionSchedule> {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    obtenerTurnosAtencion();
+
+  }
   List turnosAtencionMedica = [
-    [1, "A12", "turno mañana", "medico1", "ginecologia"],
+    /*[1, "A12", "turno mañana", "medico1", "ginecologia"],
     [2, "A15", "turno mañana", "medico3", "neurologia"],
     [3, "B12", "turno tarde", "medico3", "traumatologia"],
     [3, "B12", "turno tarde", "medico3", "traumatologia"],
@@ -22,7 +32,7 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
     [3, "B12", "turno tarde", "medico3", "traumatologia"],
     [3, "B12", "turno tarde", "medico3", "traumatologia"],
     [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"]
+    [3, "B12", "turno tarde", "medico3", "traumatologia"]*/
   ];
   @override
   Widget build(BuildContext context) {
@@ -35,7 +45,8 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
           child: Column(
             children: [
               Container(
-                height: 200,
+                padding: EdgeInsets.all(10),
+                child: Text("Horarios de atencion",style: TextStyle(fontSize: 24,color: Colores.color4),),
               ),
               Container(
                   height: 600,
@@ -128,6 +139,19 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
             ],
           ),
         ));
+  }
+
+  void obtenerTurnosAtencion() {
+    http.get(
+      Uri.https(dotenv.env["API_URL"]!,'/api/microservicio-gestion-informacion-centro-medico/horarios-atencion-medica'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      }
+    ).then((response)async{
+      setState(() {
+        turnosAtencionMedica=jsonDecode(response.body);
+      });
+    });
   }
 }
 

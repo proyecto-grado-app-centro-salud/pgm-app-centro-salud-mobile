@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,6 +10,7 @@ import 'package:proyecto_grado_flutter/widgets/image_container.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 
 import '../util/colores.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,12 +24,13 @@ class _MyHomePageState extends State<HomePage> {
   List equipoMedico = [];
   List procesoPeticionFichaPresencial = [];
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    obtenerEspecialidades();
+    obtenerEquipoMedico();
   }
-
   @override
   Widget build(BuildContext context) {
     //final _endPoint = dotenv.env['API_ENDPOINT'];
@@ -48,7 +52,8 @@ class _MyHomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     CustomTextTitle(
-                        label: '${LocaleData.especialidades.getString(context)}'),
+                        label:
+                            '${LocaleData.especialidades.getString(context)}'),
                     const Spacer(),
                     TextButton(
                       onPressed: () {},
@@ -85,11 +90,11 @@ class _MyHomePageState extends State<HomePage> {
                                 ImageContainer(
                                   width: 220,
                                   imageUrl:
-                                      '$_endPoint/storage/default_image.png',
+                                      '',
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  newData.nombre,
+                                  newData["nombre"],
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: Theme.of(context)
@@ -148,11 +153,11 @@ class _MyHomePageState extends State<HomePage> {
                                 ImageContainer(
                                   width: 220,
                                   imageUrl:
-                                      '$_endPoint/storage/default_image.png',
+                                      '',
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  newData.nombre,
+                                  "Dr. "+newData["nombres"]+" "+newData["apellidoPaterno"],
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: Theme.of(context)
@@ -238,5 +243,33 @@ class _MyHomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void obtenerEspecialidades() {
+    http.get(
+        Uri.https(dotenv.env["API_URL"]!,
+            "/api/microservicio-gestion-informacion-centro-medico/especialidades"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        }).then((response) async {
+          setState(() {
+            especialidades = jsonDecode(response.body);
+          });
+          print(especialidades);
+    });
+  }
+
+  void obtenerEquipoMedico() {
+    http.get(
+        Uri.https(dotenv.env["API_URL"]!,
+            "/api/microservicio-gestion-informacion-centro-medico/medicos"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        }).then((response) async {
+          setState(() {
+            equipoMedico = jsonDecode(response.body);
+          });
+          print(equipoMedico);
+    });
   }
 }
