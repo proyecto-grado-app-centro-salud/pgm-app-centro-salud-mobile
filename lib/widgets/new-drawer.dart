@@ -81,7 +81,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   width: 75,
                   height: 75,
                   child: Image.asset(
-                    "assets/icono_cocawi.png",
+                    "assets/hospital.jpg",
                     fit: BoxFit.cover,
                   )),
             ),
@@ -119,7 +119,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   context, FadeRoute(page: const AttentionSchedule()))
             },
           ),
-          ListTile(
+          /*ListTile(
             leading: Icon(Icons.book),
             title: Text('Gestion de fichas medicas'),
             onTap: () => {
@@ -127,7 +127,7 @@ class _NavDrawerState extends State<NavDrawer> {
               Navigator.push(context,
                   FadeRoute(page: const GestionFichasMedicas()))
             },
-          ),
+          ),*/
           (!logeado)
               ? Column(
                   children: [

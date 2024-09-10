@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
   TextEditingController password = TextEditingController();
   _signInWithEmailAndPassword() {
     http.post(
-        Uri.https(dotenv.env["API_URL"]!,
+        Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-gestion-usuarios/auth/sign-in"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',

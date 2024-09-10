@@ -224,7 +224,7 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
   void obtenerFichasMedicas() {
     int idPaciente = 1;
     http.get(
-        Uri.https(dotenv.env["API_URL"]!,
+        Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-fichas-medicas/fichas-medicas/detalle/paciente/${idPaciente}"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -241,7 +241,7 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
   void eliminarFichaMedicas(int idFichaMedica) {
     int idPaciente = 1;
     http.delete(
-        Uri.https(dotenv.env["API_URL"]!,
+        Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-fichas-medicas/fichas-medicas/${idFichaMedica}"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',

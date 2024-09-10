@@ -143,7 +143,7 @@ class _AttentionScheduleState extends State<AttentionSchedule> {
 
   void obtenerTurnosAtencion() {
     http.get(
-      Uri.https(dotenv.env["API_URL"]!,'/api/microservicio-gestion-informacion-centro-medico/horarios-atencion-medica'),
+      Uri.http(dotenv.env["API_URL"]!,'/api/microservicio-gestion-informacion-centro-medico/horarios-atencion-medica'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       }

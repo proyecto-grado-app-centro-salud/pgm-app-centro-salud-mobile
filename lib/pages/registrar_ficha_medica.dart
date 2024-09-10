@@ -22,6 +22,7 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
     // TODO: implement initState
     super.initState();
     obtenerTurnosAtencion();
+
   }
 
   /*List turnosAtencionMedica = [
@@ -89,7 +90,7 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
                                               fontWeight: FontWeight.bold))),
                                   Expanded(
                                       flex: 1,
-                                      child: Text(turnoAtencionMedica[1],
+                                      child: Text(turnoAtencionMedica[5],
                                           style: const TextStyle(
                                               color: Colors.white))),
                                 ],
@@ -180,7 +181,7 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
 
   void obtenerTurnosAtencion() {
     http.get(
-        Uri.https(dotenv.env["API_URL"]!,
+        Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-gestion-informacion-centro-medico/horarios-atencion-medica"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -195,9 +196,9 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
 
   void registrarFichaMedica(int idTurnoAtencion) {
     int idPaciente = 1;
-    String email="vico060400@gmail.com";
+    String email="mariafernanda82917483@gmail.com";
     http.post(
-        Uri.https(dotenv.env["API_URL"]!,
+        Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-fichas-medicas/fichas-medicas"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',

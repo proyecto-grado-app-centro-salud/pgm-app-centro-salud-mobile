@@ -32,7 +32,7 @@ class ImageContainer extends StatelessWidget {
         image: DecorationImage(
           image: imageUrl == ''
               ? const NetworkImage(
-                  'https://source.unsplash.com/random/800x600/?news')
+                  'https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg')
               : NetworkImage(imageUrl) as ImageProvider,
           fit: BoxFit.cover,
         ),

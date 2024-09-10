@@ -76,6 +76,7 @@ Widget inputFormatoTextoOculto(
       obscureText: true,
       decoration: InputDecoration(
         hintText: hint,
+          suffixIcon: GestureDetector(onTap:(){},child: Icon(Icons.remove_red_eye))
       ),
       controller: controlador,
     ),
