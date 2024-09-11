@@ -50,6 +50,29 @@ Widget inputFormato(
   );
 }
 
+Widget inputFormatoBorderBlack(
+    BuildContext context, TextEditingController controlador, String hint) {
+  double baseWidth = 375;
+  double fem = MediaQuery.of(context).size.width / baseWidth;
+  double ffem = fem * 0.97;
+  return Container(
+    // frame1Fyh (1:3)
+    margin: EdgeInsets.fromLTRB(3.5 * fem, 3.5 * fem, 3.5 * fem, 3.5 * fem),
+    width: double.infinity,
+    height: 40 * fem,
+    padding: EdgeInsets.only(left: 5 * fem, right: 5 * fem),
+    decoration: BoxDecoration(
+      color: Color(0xffffffff),
+      borderRadius: BorderRadius.circular(10 * fem),
+      border: Border.all(color: Color(0xff000000)),
+    ),
+    child: TextField(
+      decoration: InputDecoration(hintText: hint),
+      controller: controlador,
+    ),
+  );
+}
+
 Widget inputFormatoTextoOculto(
     BuildContext context, TextEditingController controlador, String hint) {
   double baseWidth = 375;
@@ -75,9 +98,9 @@ Widget inputFormatoTextoOculto(
     child: TextField(
       obscureText: true,
       decoration: InputDecoration(
-        hintText: hint,
-          suffixIcon: GestureDetector(onTap:(){},child: Icon(Icons.remove_red_eye))
-      ),
+          hintText: hint,
+          suffixIcon:
+              GestureDetector(onTap: () {}, child: Icon(Icons.remove_red_eye))),
       controller: controlador,
     ),
   );
@@ -119,6 +142,33 @@ Widget botonInfo(
               ),
             ),
           ),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget botonPrimario(
+    BuildContext context, String tituloBoton, VoidCallback onPressed) {
+  double baseWidth = 375;
+  double fem = MediaQuery.of(context).size.width / baseWidth;
+  double ffem = fem * 0.97;
+  return Container(
+    margin: EdgeInsets.all(10),
+    width: double.infinity,
+    height: 32 * fem,
+    child: ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        alignment: Alignment.center,
+        primary: Color(0xff28AFB0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Container(
+        child: Text(
+          tituloBoton,
         ),
       ),
     ),

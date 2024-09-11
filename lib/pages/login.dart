@@ -4,6 +4,7 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:proyecto_grado_flutter/pages/menu.dart';
+import 'package:proyecto_grado_flutter/pages/recuperar_contrasenia.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_title.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -24,19 +25,21 @@ class _LoginState extends State<Login> {
   TextEditingController usuario = TextEditingController();
   TextEditingController password = TextEditingController();
   _signInWithEmailAndPassword() {
-    http.post(
-        Uri.http(dotenv.env["API_URL"]!,
-            "/api/microservicio-gestion-usuarios/auth/sign-in"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          "email": usuario.text,
-          "password": password.text
-        })).then((response) async {
-          print(response);
-          print(response.statusCode);
-      if (response.statusCode==200) {
+    http
+        .post(
+            Uri.http(dotenv.env["API_URL"]!,
+                "/api/microservicio-gestion-usuarios/auth/sign-in"),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, String>{
+              "email": usuario.text,
+              "password": password.text
+            }))
+        .then((response) async {
+      print(response);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
         var datosUsuario = (json.decode(response.body));
         SharedPreferences preferences = await SharedPreferences.getInstance();
         preferences.setString("token", datosUsuario["token"].toString());
@@ -114,7 +117,7 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       "Iniciar sesion",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -129,12 +132,17 @@ class _LoginState extends State<Login> {
                     inputFormatoTextoOculto(context, password, "contraseña"),
                     Container(
                       width: double.infinity,
-                      child: Row(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           botonInfo(context, "LOGIN", () {
                             _signInWithEmailAndPassword();
+                          }),
+                          botonInfo(context, "Recuperar contraseña", () {
+                            Navigator.pop(context);
+                            Navigator.push(context,
+                                FadeRoute(page: const RecuperarContrasenia()));
                           }),
                         ],
                       ),
