@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/pages/attention_schedules.dart';
 import 'package:proyecto_grado_flutter/pages/doctor_team.dart';
 import 'package:proyecto_grado_flutter/pages/gestion_fichas_medicas.dart';
+import 'package:proyecto_grado_flutter/pages/gestion_historias_clinicas.dart';
 import 'package:proyecto_grado_flutter/pages/home_page.dart';
 import 'package:proyecto_grado_flutter/pages/login.dart';
-import 'package:proyecto_grado_flutter/pages/medical_recort_managment.dart';
+import 'package:proyecto_grado_flutter/pages/menu.dart';
 import 'package:proyecto_grado_flutter/pages/my_profile.dart';
+import 'package:proyecto_grado_flutter/pages/recuperar_contrasenia.dart';
+import 'package:proyecto_grado_flutter/pages/registrar_ficha_medica.dart';
 import 'package:proyecto_grado_flutter/pages/specialities.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
@@ -119,6 +122,75 @@ class _NavDrawerState extends State<NavDrawer> {
                   context, FadeRoute(page: const AttentionSchedule()))
             },
           ),
+          ListTile(
+            leading: Icon(Icons.account_circle_outlined),
+            title: Text('Mi perfil'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context, FadeRoute(page: const MyProfile()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.book),
+            title: Text('Gestion de fichas medicas'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(
+                  context, FadeRoute(page: const GestionFichasMedicas()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Iniciar sesion'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context, FadeRoute(page: const Login()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Menu'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context, FadeRoute(page: const Menu()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Mi perfil'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context, FadeRoute(page: const MyProfile()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Recuperar contraseña'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(
+                  context, FadeRoute(page: const RecuperarContrasenia()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Registrar ficha medica'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(
+                  context, FadeRoute(page: const RegistrarFichaMedica()))
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.login),
+            title: Text('Gestion de historias clinicas'),
+            onTap: () => {
+              Navigator.pop(context),
+              Navigator.push(context,
+                  FadeRoute(page: const GestionHistoriasClinicasView()))
+            },
+          ),
+
           /*ListTile(
             leading: Icon(Icons.book),
             title: Text('Gestion de fichas medicas'),

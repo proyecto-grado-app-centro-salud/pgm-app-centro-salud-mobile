@@ -1,5 +1,6 @@
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:proyecto_grado_flutter/pages/home_page.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,58 @@ Future<void> logout(BuildContext context) async {
           Navigator.pop(context);
           Navigator.push(context, FadeRoute(page: const HomePage()));
         }),
+  );
+}
+
+Widget cardInformacionDocumento() {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      color: Color.fromRGBO(10, 74, 110, 1),
+    ),
+    padding: EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Historia clínica                   a8439kdsa\n'
+          'Diagnóstico presuntivo     Faringitis\n'
+          'Paciente                             Jose Zuñiga\n'
+          'CI paciente                         88329405\n'
+          'Fecha creación                   20-10-2024\n'
+          'Especialidad                       Otorrinolaringología\n'
+          'Médico elaborador            Juan Gonzales',
+          textAlign: TextAlign.left,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Inter',
+            fontSize: 12,
+          ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            SizedBox(width: 10),
+            botonIcono('assets/iconos/editar.svg'),
+            SizedBox(width: 10),
+            botonIcono('assets/iconos/adelante.svg'),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget botonIcono(String ruta) {
+  return Container(
+    color: Colors.white,
+    width: 22,
+    height: 20,
+    child: SvgPicture.asset(
+      ruta,
+      fit: BoxFit.fitWidth,
+    ),
   );
 }
 

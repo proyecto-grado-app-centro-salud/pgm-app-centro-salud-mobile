@@ -1,0 +1,26 @@
+gestion de historias clinicas
+mis historias clinicas
+detalle historia clinica
+registrar historia clinica
+editar historia clinica
+mi perfil
+detalle especialidad
+detalle medico
+detalle comunicado
+procedimiento admision
+detalle procedimiento
+home (agregar especialidades, medicos, comunicados, procedimientos)
+
+
+especialidades
+equipo medico
+
+
+gestion de mis fichas medicas(usar datos falsos)
+horarios de atencion usuario no logeado(usar datos falsos)
+solicitar ficha medica(usar datos falsos)
+
+
+menu
+iniciar sesion
+recuperar contraseña

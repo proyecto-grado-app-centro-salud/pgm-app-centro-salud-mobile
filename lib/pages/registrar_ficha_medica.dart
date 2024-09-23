@@ -21,32 +21,16 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    obtenerTurnosAtencion();
-
+    //obtenerTurnosAtencion();
   }
 
-  /*List turnosAtencionMedica = [
-    [1, "A12", "turno mañana", "medico1", "ginecologia"],
-    [2, "A15", "turno mañana", "medico3", "neurologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"]
-  ];*/
-  List turnosAtencionMedica =[];
+  List turnosAtencionMedica = [
+    [1, "A12", "turno mañana", "medico1", "ginecologia", "2024-10-02"],
+    [2, "A15", "turno mañana", "medico3", "neurologia", "2024-10-02"],
+    [3, "B12", "turno tarde", "medico3", "traumatologia", "2024-10-02"],
+    [3, "B12", "turno tarde", "medico3", "traumatologia", "2024-10-02"],
+    [3, "B12", "turno tarde", "medico3", "traumatologia", "2024-10-02"],
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,27 +170,26 @@ class _RegistrarFichaMedicaState extends State<RegistrarFichaMedica> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         }).then((response) async {
-          setState(() {
-            var turnosAtencionMedicaPeticion = (json.decode(response.body));
-            turnosAtencionMedica = turnosAtencionMedicaPeticion;
-          });
-
+      setState(() {
+        var turnosAtencionMedicaPeticion = (json.decode(response.body));
+        turnosAtencionMedica = turnosAtencionMedicaPeticion;
+      });
     });
   }
 
   void registrarFichaMedica(int idTurnoAtencion) {
     int idPaciente = 1;
-    String email="mariafernanda82917483@gmail.com";
-    http.post(
-        Uri.http(dotenv.env["API_URL"]!,
-            "/api/microservicio-fichas-medicas/fichas-medicas"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          "idTurnoAtencionMedica":idTurnoAtencion,
-          "email":email
-        })).then((response) async {
+    String email = "mariafernanda82917483@gmail.com";
+    http
+        .post(
+            Uri.http(dotenv.env["API_URL"]!,
+                "/api/microservicio-fichas-medicas/fichas-medicas"),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(
+                {"idTurnoAtencionMedica": idTurnoAtencion, "email": email}))
+        .then((response) async {
       if (response.statusCode == 200) {
         ArtSweetAlert.show(
             context: context,
