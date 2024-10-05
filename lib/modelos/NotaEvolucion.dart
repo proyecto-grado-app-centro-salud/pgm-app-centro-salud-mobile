@@ -35,18 +35,18 @@ class NotaEvolucion {
 
   factory NotaEvolucion.fromJson(Map<String, dynamic> json) {
     return NotaEvolucion(
-      id: json['id'],
+      id: json['id'] ?? 0,
       cambiosPacienteResultadosTratamiento:
-          json['cambiosPacienteResultadosTratamiento'],
-      idHistoriaClinica: json['idHistoriaClinica'],
-      diagnosticoPresuntivo: json['diagnosticoPresuntivo'],
-      idPaciente: json['idPaciente'],
-      pacientePropietario: json['pacientePropietario'],
-      ciPropietario: json['ciPropietario'],
-      idMedico: json['idMedico'],
-      nombreMedico: json['nombreMedico'],
-      idEspecialidad: json['idEspecialidad'],
-      nombreEspecialidad: json['nombreEspecialidad'],
+          json['cambiosPacienteResultadosTratamiento'] ?? '',
+      idHistoriaClinica: json['idHistoriaClinica'] ?? 0,
+      diagnosticoPresuntivo: json['diagnosticoPresuntivo'] ?? '',
+      idPaciente: json['idPaciente'] ?? 0,
+      pacientePropietario: json['pacientePropietario'] ?? '',
+      ciPropietario: json['ciPropietario'] ?? '',
+      idMedico: json['idMedico'] ?? 0,
+      nombreMedico: json['nombreMedico'] ?? '',
+      idEspecialidad: json['idEspecialidad'] ?? 0,
+      nombreEspecialidad: json['nombreEspecialidad'] ?? '',
       createdAt:
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
