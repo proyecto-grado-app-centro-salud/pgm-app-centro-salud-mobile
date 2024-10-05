@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController.dart';
+import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -14,7 +16,26 @@ class GestionHistoriasClinicasView extends StatefulWidget {
 
 class _GestionHistoriasClinicasViewState
     extends State<GestionHistoriasClinicasView> {
+  @override
+  void initState() {
+    super.initState();
+    obtenerHistoriasClinicas();
+  }
+
   TextEditingController diagnosticoPresuntivo = TextEditingController();
+  List<HistoriaClinica> historiasClinicas = [];
+  obtenerHistoriasClinicas() async {
+    try {
+      List<HistoriaClinica> historias =
+          await HistoriasClinicasController().obtenerHistoriasClinicas();
+      setState(() {
+        historiasClinicas = historias;
+      });
+    } catch (e) {
+      print('Error al cargar historias clínicas: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -34,7 +55,7 @@ class _GestionHistoriasClinicasViewState
               left: 0,
               child: Container(
                 width: displayWidth(context),
-                height: displayHeight(context) * 0.3, // 28% of screen height
+                height: displayHeight(context) * 0.3,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/gestion-historias-clinicas.png'),
@@ -88,19 +109,27 @@ class _GestionHistoriasClinicasViewState
                     SizedBox(height: 10),
                     botonPrimario(context, "Buscar", () {}),
                     SizedBox(height: 10),
-                    Text(
-                      'Búsqueda avanzada',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colores.color5,
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                      ),
-                    ),
-                    SizedBox(height: 10),
+                    // Text(
+                    //   'Búsqueda avanzada',
+                    //   textAlign: TextAlign.start,
+                    //   style: TextStyle(
+                    //     color: Colores.color5,
+                    //     fontFamily: 'Inter',
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 10),
                     botonPrimario(context, "Registrar historia clínica", () {}),
                     SizedBox(height: 10),
-                    cardInformacionDocumento(),
+                    SingleChildScrollView(
+                        child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: historiasClinicas.length,
+                      itemBuilder: (context, index) {
+                        return cardInformacionDocumento(
+                            historiasClinicas[index], "Historia clinica");
+                      },
+                    )),
                   ],
                 ),
               ),

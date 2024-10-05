@@ -22,7 +22,7 @@ Future<void> logout(BuildContext context) async {
   );
 }
 
-Widget cardInformacionDocumento() {
+Widget cardInformacionDocumento(documento, tipoDocumento) {
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(20),
@@ -32,20 +32,26 @@ Widget cardInformacionDocumento() {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Historia clínica                   a8439kdsa\n'
-          'Diagnóstico presuntivo     Faringitis\n'
-          'Paciente                             Jose Zuñiga\n'
-          'CI paciente                         88329405\n'
-          'Fecha creación                   20-10-2024\n'
-          'Especialidad                       Otorrinolaringología\n'
-          'Médico elaborador            Juan Gonzales',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Inter',
-            fontSize: 12,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            campoFilaDocumento(tipoDocumento, documento.id.toString()),
+            tipoDocumento.idHistoriaClinica ??
+                campoFilaDocumento('idHistoriaClinica',
+                    documento.idHistoriaClinica.toString()),
+            campoFilaDocumento('Diagnóstico presuntivo',
+                documento.diagnosticoPresuntivo.toString()),
+            campoFilaDocumento(
+                'Paciente', documento.pacientePropietario.toString()),
+            campoFilaDocumento(
+                'CI paciente', documento.ciPropietario.toString()),
+            campoFilaDocumento(
+                'Fecha creación', documento.createdAt.toString()),
+            campoFilaDocumento(
+                'Especialidad', documento.nombreEspecialidad.toString()),
+            campoFilaDocumento(
+                'Médico elaborador', documento.nombreMedico.toString()),
+          ],
         ),
         SizedBox(height: 10),
         Row(
@@ -59,6 +65,38 @@ Widget cardInformacionDocumento() {
         ),
       ],
     ),
+  );
+}
+
+campoFilaDocumento(String campo, String valor) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        child: Text(
+          campo,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Inter',
+            fontSize: 12,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      SizedBox(width: 10),
+      Expanded(
+        child: Text(
+          valor,
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Inter',
+            fontSize: 12,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ],
   );
 }
 
