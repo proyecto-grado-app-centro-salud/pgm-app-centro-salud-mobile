@@ -22,7 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<HomePage> {
-  final EspecialidadesController controller = EspecialidadesController();
+  final EspecialidadesController especialidadesController =
+      EspecialidadesController();
   List<Especialidad> especialidades = [];
   String _errorMessage = "";
   List equipoMedico = [];
@@ -213,7 +214,8 @@ class _MyHomePageState extends State<HomePage> {
   Future<void> obtenerEspecialidades() async {
     _errorMessage = "";
     try {
-      final especialidadesResponse = await controller.obtenerEspecialidades();
+      final especialidadesResponse =
+          await especialidadesController.obtenerEspecialidades();
       setState(() {
         especialidades = especialidadesResponse;
       });
