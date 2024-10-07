@@ -9,11 +9,11 @@ import 'package:proyecto_grado_flutter/util/locales.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_text_litle.dart';
 import 'package:proyecto_grado_flutter/widgets/image_container.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
+import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 import '../modelos/Especialidades.dart';
 import '../util/colores.dart';
 import 'package:http/http.dart' as http;
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,7 +24,7 @@ class HomePage extends StatefulWidget {
 class _MyHomePageState extends State<HomePage> {
   final EspecialidadesController controller = EspecialidadesController();
   List<Especialidad> especialidades = [];
-  String _errorMessage="";
+  String _errorMessage = "";
   List equipoMedico = [];
   List procesoPeticionFichaPresencial = [];
 
@@ -35,6 +35,7 @@ class _MyHomePageState extends State<HomePage> {
     obtenerEspecialidades();
     obtenerEquipoMedico();
   }
+
   @override
   Widget build(BuildContext context) {
     //final _endPoint = dotenv.env['API_ENDPOINT'];
@@ -78,42 +79,16 @@ class _MyHomePageState extends State<HomePage> {
                   ),
                   child: SizedBox(
                     height: 200,
-                    child: (_errorMessage.isEmpty)?Center(child:Text(_errorMessage)):ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: especialidades.length,
-                      itemBuilder: (context, index) {
-                        final newData = especialidades[index];
-                        return Container(
-                          width: 220,
-                          margin: const EdgeInsets.only(right: 10),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ImageContainer(
-                                  width: 220,
-                                  imageUrl:
-                                      '',
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  newData.nombre,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          height: 1.5),
-                                ),
-                              ],
-                            ),
+                    child: (_errorMessage.isEmpty)
+                        ? Center(child: Text(_errorMessage))
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: especialidades.length,
+                            itemBuilder: (context, index) {
+                              final especialidad = especialidades[index];
+                              return cardEspecialidad(context, especialidad);
+                            },
                           ),
-                        );
-                      },
-                    ),
                   )),
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 10),
@@ -145,36 +120,8 @@ class _MyHomePageState extends State<HomePage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: equipoMedico.length,
                       itemBuilder: (context, index) {
-                        final newData = equipoMedico[index];
-                        return Container(
-                          width: 220,
-                          margin: const EdgeInsets.only(right: 10),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ImageContainer(
-                                  width: 220,
-                                  imageUrl:
-                                      '',
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Dr. "+newData["nombres"]+" "+newData["apellidoPaterno"],
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          height: 1.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                        final medico = equipoMedico[index];
+                        return cardMedico(context, medico);
                       },
                     ),
                   )),
@@ -249,8 +196,6 @@ class _MyHomePageState extends State<HomePage> {
     );
   }
 
-
-
   void obtenerEquipoMedico() {
     http.get(
         Uri.http(dotenv.env["API_URL"]!,
@@ -258,20 +203,21 @@ class _MyHomePageState extends State<HomePage> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         }).then((response) async {
-          setState(() {
-            equipoMedico = jsonDecode(response.body);
-          });
-          print(equipoMedico);
+      setState(() {
+        equipoMedico = jsonDecode(response.body);
+      });
+      print(equipoMedico);
     });
   }
+
   Future<void> obtenerEspecialidades() async {
-    _errorMessage="";
-    try{
+    _errorMessage = "";
+    try {
       final especialidadesResponse = await controller.obtenerEspecialidades();
       setState(() {
         especialidades = especialidadesResponse;
       });
-    }catch(e){
+    } catch (e) {
       _errorMessage = 'Error al obtener especialidades';
     }
   }

@@ -1,10 +1,13 @@
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
+import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
 import 'package:proyecto_grado_flutter/pages/home_page.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
+import 'package:proyecto_grado_flutter/widgets/image_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> logout(BuildContext context) async {
@@ -386,6 +389,64 @@ Widget gestionDocumentosExpedienteClinico(
           ),
         ),
       ],
+    ),
+  );
+}
+
+Widget cardEspecialidad(BuildContext context, Especialidad especialidad) {
+  return Container(
+    width: 220,
+    margin: const EdgeInsets.only(right: 10),
+    child: InkWell(
+      onTap: () {},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ImageContainer(
+            width: 220,
+            imageUrl: '',
+          ),
+          const SizedBox(height: 10),
+          Text(
+            especialidad.nombre,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(fontWeight: FontWeight.bold, height: 1.5),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget cardMedico(BuildContext context, MedicoEspecialista medico) {
+  return Container(
+    width: 220,
+    margin: const EdgeInsets.only(right: 10),
+    child: InkWell(
+      onTap: () {},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ImageContainer(
+            width: 220,
+            imageUrl: '',
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Dr. ${medico.nombres} ${medico.apellidoPaterno}",
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(fontWeight: FontWeight.bold, height: 1.5),
+          ),
+        ],
+      ),
     ),
   );
 }
