@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
-import 'package:proyecto_grado_flutter/pages/home_page.dart';
+import 'package:proyecto_grado_flutter/pages/unl_home_page.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
@@ -393,12 +393,14 @@ Widget gestionDocumentosExpedienteClinico(
   );
 }
 
-Widget cardEspecialidad(BuildContext context, Especialidad especialidad) {
+Widget cardEspecialidad(BuildContext context, Especialidad especialidad,
+    [VoidCallback? metodoClick]) {
+  metodoClick ??= () {};
   return Container(
     width: 220,
     margin: const EdgeInsets.only(right: 10),
     child: InkWell(
-      onTap: () {},
+      onTap: metodoClick,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
