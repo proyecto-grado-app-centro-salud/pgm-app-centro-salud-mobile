@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:proyecto_grado_flutter/modelos/Imagen.dart';
+
 class Especialidad {
   final int idEspecialidad;
   final String nombre;
@@ -8,12 +10,14 @@ class Especialidad {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
-  
+  final List<Imagen> imagenes;
+
   Especialidad({
     required this.idEspecialidad,
     required this.nombre,
     required this.descripcion,
     required this.fechaCreacion,
+    required this.imagenes,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -23,6 +27,10 @@ class Especialidad {
     return Especialidad(
       idEspecialidad: json['id_especialidad'],
       nombre: json['nombre'],
+      imagenes: (json['imagenes'] as List<dynamic>?)
+              ?.map((img) => Imagen.fromJson(img))
+              .toList() ??
+          [],
       descripcion: json['descripcion'],
       fechaCreacion: DateTime.parse(json['fecha_creacion']),
       createdAt: json['created_at'] != null

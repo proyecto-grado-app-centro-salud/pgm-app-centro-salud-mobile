@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:proyecto_grado_flutter/pages/home_page.dart';
+import 'package:proyecto_grado_flutter/pages/unl_home_page.dart';
+import 'package:proyecto_grado_flutter/services/app_router.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/locales.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +52,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colores.color4Material,
       ),
+      onGenerateRoute: AppRouter().onGenerateRoute,
       home: HomePage(),
     );
   }
