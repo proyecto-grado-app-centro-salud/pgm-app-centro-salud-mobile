@@ -424,7 +424,9 @@ Widget cardEspecialidad(BuildContext context, Especialidad especialidad,
   );
 }
 
-Widget cardMedico(BuildContext context, MedicoEspecialista medico) {
+Widget cardMedico(BuildContext context, MedicoEspecialista medico,
+    [VoidCallback? metodoClick]) {
+  metodoClick ??= () {};
   return Container(
     width: 220,
     margin: const EdgeInsets.only(right: 10),
