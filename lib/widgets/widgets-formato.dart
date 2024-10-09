@@ -454,3 +454,28 @@ Widget cardMedico(BuildContext context, MedicoEspecialista medico,
     ),
   );
 }
+
+Widget cardCaracteristica(String label) {
+  return Container(
+    width: 140,
+    height: 30,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      color: Colores.color4,
+    ),
+    child: Center(
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colores.color1,
+          fontFamily: 'Inter',
+          fontSize: 12,
+          letterSpacing: 0,
+          fontWeight: FontWeight.normal,
+          height: 1,
+        ),
+      ),
+    ),
+  );
+}
