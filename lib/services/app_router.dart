@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/pages/unl_detalle_especialidad.dart';
+import 'package:proyecto_grado_flutter/pages/unl_detalle_medico_especialista.dart';
 
 class AppRouter {
   Route? onGenerateRoute(RouteSettings routeSettings) {
@@ -9,6 +10,11 @@ class AppRouter {
         return MaterialPageRoute(
             builder: (_) =>
                 UnlDetalleEspecialidad(idEspecialidad: idEspecialidad));
+      case (UnlDetalleMedicoEspecialista.id):
+        final idMedico = routeSettings.arguments as int;
+        return MaterialPageRoute(
+            builder: (_) => UnlDetalleMedicoEspecialista(idMedico: idMedico));
+
       default:
         return null;
     }

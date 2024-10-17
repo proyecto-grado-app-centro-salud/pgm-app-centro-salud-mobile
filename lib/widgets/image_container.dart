@@ -31,8 +31,7 @@ class ImageContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
           image: imageUrl == ''
-              ? const NetworkImage(
-                  'https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg')
+              ? NetworkImage(imageUrl)
               : NetworkImage(imageUrl) as ImageProvider,
           fit: BoxFit.cover,
         ),

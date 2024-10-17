@@ -10,10 +10,10 @@ class Imagen {
   DateTime? deletedAt;
 
   Imagen({
-    this.idImagen = 0,
-    this.nombre = '',
-    this.tipo = '',
-    this.url = '',
+    required this.idImagen,
+    required this.nombre,
+    required this.tipo,
+    required this.url,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,

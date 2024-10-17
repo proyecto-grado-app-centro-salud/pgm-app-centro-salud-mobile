@@ -32,12 +32,20 @@ class MedicoEspecialista {
   });
 
   factory MedicoEspecialista.fromJson(Map<String, dynamic> json) {
+    final List<Imagen> imagenes = (json['imagenes'] as List<dynamic>?)
+            ?.map((img) => Imagen.fromJson(img))
+            .toList() ??
+        [];
     return MedicoEspecialista(
       idUsuario: json['idUsuario'] ?? 0,
-      imagenes: (json['imagenes'] as List<dynamic>?)
-              ?.map((img) => Imagen.fromJson(img))
-              .toList() ??
-          [],
+      imagenes: imagenes.isNotEmpty
+          ? imagenes
+          : [
+              Imagen.fromJson({
+                "url":
+                    'https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg'
+              })
+            ],
       nombres: json['nombres'] ?? '',
       apellidoPaterno: json['apellidoPaterno'] ?? '',
       apellidoMaterno: json['apellidoMaterno'] ?? '',
@@ -45,13 +53,13 @@ class MedicoEspecialista {
       email: json['email'] ?? '',
       celular: json['celular'] ?? '',
       aniosExperiencia: json['aniosExperiencia'] ?? 0,
-      especialidades: (json['especialidades'] as List<dynamic>?) ?? [],
-      turnosAtencionMedica: json['turnosAtencionMedica'] ?? [],
+      especialidades: [],
+      turnosAtencionMedica: [],
       descripcion: json['descripcion'] ?? '',
     );
   }
 
-  static List<MedicoEspecialista> listFromJson(String jsonString) {
+  static List<MedicoEspecialista> listFromString(String jsonString) {
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((json) => MedicoEspecialista.fromJson(json)).toList();
   }
