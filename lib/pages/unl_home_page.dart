@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:proyecto_grado_flutter/controladores/EspecialidadesController.dart';
+import 'package:proyecto_grado_flutter/controladores/MedicosController.dart';
 import 'package:proyecto_grado_flutter/util/locales.dart';
+import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_text_litle.dart';
 import 'package:proyecto_grado_flutter/widgets/image_container.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -24,6 +26,7 @@ class HomePage extends StatefulWidget {
 class _MyHomePageState extends State<HomePage> {
   final EspecialidadesController especialidadesController =
       EspecialidadesController();
+  final MedicosController medicosController = MedicosController();
   List<Especialidad> especialidades = [];
   String _errorMessage = "";
   List equipoMedico = [];
@@ -53,6 +56,62 @@ class _MyHomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: <Widget>[
+              Container(
+                width: displayWidth(context),
+                height: 180,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                        image: AssetImage("assets/banner-home.jpg"),
+                        fit: BoxFit.cover)),
+                child: Container(
+                    padding: EdgeInsets.all(20),
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Color.fromARGB(120, 0, 0, 0),
+                    child: Align(
+                        child: Text(
+                      "GESTION DE CONSULTAS EXTERNAS CENTROS DE SALUD",
+                      style: TextStyle(
+                          fontFamily: "Inter",
+                          color: Colores.color1,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    )),
+                    alignment: Alignment.centerLeft),
+              ),
+              Align(
+                child: Text(
+                  '¡Bienvenido de nuevo! Nos alegra verte otra vez.',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colores.color4,
+                      fontWeight: FontWeight.w700),
+                ),
+                alignment: Alignment.centerLeft,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        image: DecorationImage(
+                            image: AssetImage("assets/banner-home.jpg"),
+                            fit: BoxFit.cover)),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    children: [Text("Jose Gutierrez")],
+                  )
+                ],
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 10),
                 child: Row(
@@ -80,16 +139,15 @@ class _MyHomePageState extends State<HomePage> {
                   ),
                   child: SizedBox(
                     height: 200,
-                    child: (_errorMessage.isEmpty)
-                        ? Center(child: Text(_errorMessage))
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: especialidades.length,
-                            itemBuilder: (context, index) {
-                              final especialidad = especialidades[index];
-                              return cardEspecialidad(context, especialidad);
-                            },
-                          ),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: especialidades.length,
+                      itemBuilder: (context, index) {
+                        final especialidad = especialidades[index];
+                        print(especialidad);
+                        return cardEspecialidad(context, especialidad);
+                      },
+                    ),
                   )),
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 10),
@@ -117,7 +175,8 @@ class _MyHomePageState extends State<HomePage> {
                   ),
                   child: SizedBox(
                     height: 200,
-                    child: ListView.builder(
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(width: 10),
                       scrollDirection: Axis.horizontal,
                       itemCount: equipoMedico.length,
                       itemBuilder: (context, index) {
@@ -197,18 +256,16 @@ class _MyHomePageState extends State<HomePage> {
     );
   }
 
-  void obtenerEquipoMedico() {
-    http.get(
-        Uri.http(dotenv.env["API_URL"]!,
-            "/api/microservicio-gestion-informacion-centro-medico/medicos"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        }).then((response) async {
+  Future<void> obtenerEquipoMedico() async {
+    _errorMessage = "";
+    try {
+      final medicosResponse = await medicosController.obtenerEquipoMedico();
       setState(() {
-        equipoMedico = jsonDecode(response.body);
+        equipoMedico = medicosResponse;
       });
-      print(equipoMedico);
-    });
+    } catch (e) {
+      _errorMessage = 'Error al obtener medicos';
+    }
   }
 
   Future<void> obtenerEspecialidades() async {
