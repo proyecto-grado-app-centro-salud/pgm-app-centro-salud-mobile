@@ -29,6 +29,7 @@ Future<void> logout(BuildContext context) async {
 
 Widget cardInformacionDocumento(documento, tipoDocumento) {
   return Container(
+    margin: EdgeInsets.all(10),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(20),
       color: Color.fromRGBO(10, 74, 110, 1),
@@ -41,9 +42,9 @@ Widget cardInformacionDocumento(documento, tipoDocumento) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             campoFilaDocumento(tipoDocumento, documento.id.toString()),
-            tipoDocumento.idHistoriaClinica ??
-                campoFilaDocumento('idHistoriaClinica',
-                    documento.idHistoriaClinica.toString()),
+            // tipoDocumento.idHistoriaClinica ??
+            //     campoFilaDocumento('idHistoriaClinica',
+            //         documento.idHistoriaClinica.toString()),
             campoFilaDocumento('Diagnóstico presuntivo',
                 documento.diagnosticoPresuntivo.toString()),
             campoFilaDocumento(
@@ -58,15 +59,43 @@ Widget cardInformacionDocumento(documento, tipoDocumento) {
                 'Médico elaborador', documento.nombreMedico.toString()),
           ],
         ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            SizedBox(width: 10),
-            botonIcono('assets/iconos/editar.svg'),
-            SizedBox(width: 10),
-            botonIcono('assets/iconos/adelante.svg'),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Column(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    child: Icon(
+                      Icons.edit,
+                      color: Colores.color1,
+                      size: 18,
+                    ),
+                  ),
+                  Text('Editar',
+                      style: TextStyle(color: Colores.color1, fontSize: 10)),
+                ],
+              ),
+              SizedBox(width: 10),
+              // botonIcono('assets/editar.svg'),
+              Column(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    child: Icon(Icons.arrow_circle_right_outlined,
+                        color: Colores.color1, size: 18),
+                  ),
+                  Text('Ver detalle',
+                      style: TextStyle(color: Colores.color1, fontSize: 10)),
+                ],
+              ),
+              // botonIcono('assets/adelante.svg'),
+            ],
+          ),
         ),
       ],
     ),
@@ -166,6 +195,30 @@ Widget inputFormatoBorderBlack(
       decoration: InputDecoration(hintText: hint),
       controller: controlador,
     ),
+  );
+}
+
+Widget inputFormFieldFormatoBorderBlack(
+    BuildContext context, TextEditingController controlador, String hint,
+    [VoidCallback? metodoClick]) {
+  metodoClick ??= () {};
+  double baseWidth = 375;
+  double fem = MediaQuery.of(context).size.width / baseWidth;
+  double ffem = fem * 0.97;
+  return Container(
+    margin: EdgeInsets.fromLTRB(3.5 * fem, 3.5 * fem, 3.5 * fem, 3.5 * fem),
+    width: double.infinity,
+    height: 40 * fem,
+    padding: EdgeInsets.only(left: 5 * fem, right: 5 * fem),
+    decoration: BoxDecoration(
+      color: Color(0xffffffff),
+      borderRadius: BorderRadius.circular(10 * fem),
+      border: Border.all(color: Color(0xff000000)),
+    ),
+    child: TextFormField(
+        decoration: InputDecoration(hintText: hint),
+        controller: controlador,
+        validator: (value) {}),
   );
 }
 
@@ -295,7 +348,9 @@ Widget gestionDocumentosExpedienteClinico(
     List documentos,
     String nombreDocumento,
     String urlImagenBanner,
-    TextEditingController diagnosticoPresuntivo) {
+    TextEditingController diagnosticoPresuntivo,
+    [VoidCallback? metodoBuscar]) {
+  metodoBuscar ??= () {};
   return Container(
     width: displayWidth(context),
     decoration: BoxDecoration(
@@ -320,71 +375,77 @@ Widget gestionDocumentosExpedienteClinico(
         Positioned(
           top: 180,
           left: 0,
-          child: Container(
-            width: displayWidth(context),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0),
+          bottom: 0,
+          right: 0,
+          child: SingleChildScrollView(
+            child: Container(
+              width: displayWidth(context),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                  bottomLeft: Radius.circular(0),
+                  bottomRight: Radius.circular(0),
+                ),
+                color: Colores.color2,
               ),
-              color: Colores.color2,
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    'Gestion ${nombreDocumento.toLowerCase()}',
-                    textAlign: TextAlign.center,
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'Gestion ${nombreDocumento.toLowerCase()}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colores.color5,
+                        fontFamily: 'Inter',
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Diagnóstico presuntivo',
+                    textAlign: TextAlign.start,
                     style: TextStyle(
                       color: Colores.color5,
                       fontFamily: 'Inter',
-                      fontSize: 18,
+                      fontSize: 12,
                     ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Diagnóstico presuntivo',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: Colores.color5,
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                  ),
-                ),
-                SizedBox(height: 10),
-                inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
-                SizedBox(height: 10),
-                botonPrimario(context, "Buscar", () {}),
-                SizedBox(height: 10),
-                // Text(
-                //   'Búsqueda avanzada',
-                //   textAlign: TextAlign.start,
-                //   style: TextStyle(
-                //     color: Colores.color5,
-                //     fontFamily: 'Inter',
-                //     fontSize: 12,
-                //   ),
-                // ),
-                // SizedBox(height: 10),
-                botonPrimario(context,
-                    'Registrar ${nombreDocumento.toLowerCase()}', () {}),
-                SizedBox(height: 10),
-                SingleChildScrollView(
+                  SizedBox(height: 5),
+                  inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
+                  SizedBox(height: 10),
+                  botonPrimario(context, "Buscar", metodoBuscar),
+                  SizedBox(height: 10),
+                  // Text(
+                  //   'Búsqueda avanzada',
+                  //   textAlign: TextAlign.start,
+                  //   style: TextStyle(
+                  //     color: Colores.color5,
+                  //     fontFamily: 'Inter',
+                  //     fontSize: 12,
+                  //   ),
+                  // ),
+                  // SizedBox(height: 10),
+                  botonPrimario(context,
+                      'Registrar ${nombreDocumento.toLowerCase()}', () {}),
+                  SizedBox(height: 5),
+                  Container(
                     child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: documentos.length,
-                  itemBuilder: (context, index) {
-                    return cardInformacionDocumento(
-                        documentos[index], nombreDocumento);
-                  },
-                )),
-              ],
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: documentos.length,
+                      itemBuilder: (context, index) {
+                        return cardInformacionDocumento(
+                            documentos[index], nombreDocumento);
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -475,6 +536,65 @@ Widget cardCaracteristica(String label) {
           fontWeight: FontWeight.normal,
           height: 1,
         ),
+      ),
+    ),
+  );
+}
+
+Widget etiquetaInputDocumento(String label) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      Text(
+        label,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colores.color5,
+          fontFamily: 'Inter',
+          fontSize: 12,
+          letterSpacing: 0,
+          fontWeight: FontWeight.normal,
+          height: 1,
+        ),
+      ),
+      SizedBox(width: 5),
+      iconoVerDetalleCampoDocumento(),
+    ],
+  );
+}
+
+Widget iconoVerDetalleCampoDocumento() {
+  return Container(
+    width: 15,
+    height: 17,
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/images/eye.png'),
+        fit: BoxFit.fitWidth,
+      ),
+    ),
+  );
+}
+
+Widget botonSiguienteFormularioDocumento([VoidCallback? metodoClick]) {
+  metodoClick ??= () {};
+  return GestureDetector(
+    onTap: metodoClick,
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colores.color3,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/flecha-derecha-blanca.png',
+            width: 16,
+            height: 16,
+          ),
+        ],
       ),
     ),
   );

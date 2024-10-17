@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaEvolucion.dart';
 import 'package:http/http.dart' as http;
+import 'package:proyecto_grado_flutter/services/documentos_service.dart';
 
 class NotasEvolucionController {
   Future<List<NotaEvolucion>> obtenerNotasEvolucion() async {
@@ -18,9 +22,20 @@ class NotasEvolucionController {
       if (response.statusCode != 200) {
         throw Exception('Error en la solicitud: ${response.statusCode}');
       }
-      return NotaEvolucion.listFromString(response.body);
+      final body = utf8.decode(response.bodyBytes);
+      return NotaEvolucion.listFromString(body);
     } catch (e) {
-      throw Exception('Error al obtener especialidades: $e');
+      throw Exception('Error al obtener notas de evolucion: $e');
     }
+  }
+
+  List<NotaEvolucion> filtrarNotaEvolucion(List notasEvolucion,
+      [String diagnosticoPresuntivo = '']) {
+    print(notasEvolucion);
+    List notasEvolucionRetornar = DocumentosService()
+        .filtrarDocumentosPorDiagnosticoPresuntivo(
+            notasEvolucion, diagnosticoPresuntivo);
+    print(notasEvolucionRetornar);
+    return notasEvolucionRetornar.cast<NotaEvolucion>();
   }
 }

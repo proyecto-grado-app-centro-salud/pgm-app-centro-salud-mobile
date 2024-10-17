@@ -24,12 +24,14 @@ class _GestionNotasEvolucionViewState extends State<GestionNotasEvolucionView> {
   final urlImagenBanner = "assets/gestion-notas-evolucion.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();
   List<NotaEvolucion> notasEvolucion = [];
+  List<NotaEvolucion> notasEvolucionAux = [];
   obtenerNotasEvolucion() async {
     try {
       List<NotaEvolucion> notas =
           await NotasEvolucionController().obtenerNotasEvolucion();
       setState(() {
         notasEvolucion = notas;
+        notasEvolucionAux = notas;
       });
     } catch (e) {
       print('Error al cargar notas evolucion: $e');
@@ -38,13 +40,17 @@ class _GestionNotasEvolucionViewState extends State<GestionNotasEvolucionView> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(context, notasEvolucion,
-          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo),
+          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo, () {
+        setState(() {
+          notasEvolucion = NotasEvolucionController().filtrarNotaEvolucion(
+              notasEvolucionAux, diagnosticoPresuntivo.text);
+        });
+      }),
     );
   }
 }
