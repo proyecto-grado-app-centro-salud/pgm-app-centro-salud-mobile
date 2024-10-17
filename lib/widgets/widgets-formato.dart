@@ -455,29 +455,36 @@ Widget gestionDocumentosExpedienteClinico(
 }
 
 Widget cardEspecialidad(BuildContext context, Especialidad especialidad,
-    [VoidCallback? metodoClick]) {
+    [VoidCallback? metodoClick, double anchoCard = 220]) {
   metodoClick ??= () {};
   return Container(
-    width: 220,
+    width: anchoCard,
     margin: const EdgeInsets.only(right: 10),
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20), color: Colores.color4),
     child: InkWell(
       onTap: metodoClick,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ImageContainer(
-            width: 220,
-            imageUrl: '',
+            width: double.infinity,
+            imageUrl: especialidad.imagenes[0].url,
           ),
           const SizedBox(height: 10),
-          Text(
-            especialidad.nombre,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.bold, height: 1.5),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Center(
+              child: Text(
+                especialidad.nombre,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    height: 1.5,
+                    color: Colores.color1),
+              ),
+            ),
           ),
         ],
       ),
@@ -488,28 +495,54 @@ Widget cardEspecialidad(BuildContext context, Especialidad especialidad,
 Widget cardMedico(BuildContext context, MedicoEspecialista medico,
     [VoidCallback? metodoClick]) {
   metodoClick ??= () {};
-  return Container(
-    width: 220,
-    margin: const EdgeInsets.only(right: 10),
-    child: InkWell(
-      onTap: () {},
+  return GestureDetector(
+    onTap: metodoClick,
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        border: Border.all(color: Color.fromRGBO(0, 0, 0, 1), width: 1),
+      ),
+      padding: EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ImageContainer(
-            width: 220,
-            imageUrl: '',
+          Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  image: DecorationImage(
+                    image: NetworkImage(medico.imagenes[0].url),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                '${medico.nombres} ${medico.apellidoPaterno}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color.fromRGBO(0, 0, 0, 1),
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            "Dr. ${medico.nombres} ${medico.apellidoPaterno}",
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.bold, height: 1.5),
-          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+            child: Text(
+              '${medico.email}',
+              style: TextStyle(
+                color: Color.fromRGBO(0, 0, 0, 1),
+                fontFamily: 'Inter',
+                fontSize: 16,
+              ),
+            ),
+          )
         ],
       ),
     ),
@@ -573,6 +606,12 @@ Widget iconoVerDetalleCampoDocumento() {
         fit: BoxFit.fitWidth,
       ),
     ),
+  );
+}
+
+Widget obtenerIconoCarga(BuildContext context) {
+  return Center(
+    child: CircularProgressIndicator(),
   );
 }
 

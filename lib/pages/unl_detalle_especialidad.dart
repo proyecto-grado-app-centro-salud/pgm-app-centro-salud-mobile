@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/EspecialidadesController.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
+import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
+import 'package:proyecto_grado_flutter/widgets/custom_principal_text_title.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_text_litle.dart';
 import 'package:proyecto_grado_flutter/widgets/image_container.dart';
+import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
+import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class UnlDetalleEspecialidad extends StatefulWidget {
   const UnlDetalleEspecialidad({super.key, required this.idEspecialidad});
@@ -19,7 +23,7 @@ class _UnlDetalleEspecialidadState extends State<UnlDetalleEspecialidad> {
   final int idEspecialidad;
   final EspecialidadesController especialidadesController =
       EspecialidadesController();
-  late Especialidad especialidad;
+  Especialidad? especialidad;
   String _errorMessage = "";
   _UnlDetalleEspecialidadState({required this.idEspecialidad});
   @override
@@ -30,31 +34,44 @@ class _UnlDetalleEspecialidadState extends State<UnlDetalleEspecialidad> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(children: [
-        Center(child: CustomTextTitle(label: especialidad.nombre)),
-        const SizedBox(height: 10),
-        ImageContainer(
-          width: displayWidth(context),
-          height: displayHeight(context) * 0.3,
-          imageUrl: especialidad.imagenes[0].url,
-        ),
-        Text(
-          especialidad.descripcion,
-          style: TextStyle(
-            fontSize: 15,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-      ]),
+    return Scaffold(
+      drawer: NavDrawer(),
+      appBar: AppBar(
+        backgroundColor: Colores.color4,
+        title: Text("app consultas medicas"),
+      ),
+      body: (especialidad == null)
+          ? obtenerIconoCarga(context)
+          : SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(children: [
+                  CustomPrincipalTextTitle(label: especialidad!.nombre),
+                  const Divider(),
+                  ImageContainer(
+                    width: displayWidth(context),
+                    height: displayHeight(context) * 0.3,
+                    imageUrl: especialidad!.imagenes[0].url,
+                  ),
+                  const Divider(),
+                  Text(
+                    especialidad!.descripcion,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colores.color5,
+                    ),
+                  ),
+                ]),
+              ),
+            ),
     );
   }
 
-  void obtenerEspecialidad() {
+  Future<void> obtenerEspecialidad() async {
     _errorMessage = "";
     try {
       final especialidadResponse =
-          especialidadesController.obtenerEspecialidad(idEspecialidad);
+          await especialidadesController.obtenerEspecialidad(idEspecialidad);
       setState(() {
         especialidad = especialidadResponse;
       });

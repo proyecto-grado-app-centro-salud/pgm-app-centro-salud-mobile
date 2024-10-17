@@ -6,7 +6,7 @@ class Especialidad {
   final int idEspecialidad;
   final String nombre;
   final String descripcion;
-  final DateTime fechaCreacion;
+  final DateTime? fechaCreacion;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -16,7 +16,7 @@ class Especialidad {
     required this.idEspecialidad,
     required this.nombre,
     required this.descripcion,
-    required this.fechaCreacion,
+    this.fechaCreacion,
     required this.imagenes,
     this.createdAt,
     this.updatedAt,
@@ -24,24 +24,31 @@ class Especialidad {
   });
 
   factory Especialidad.fromJson(Map<String, dynamic> json) {
+    final List<Imagen> imagenes = (json['imagenes'] as List<dynamic>?)
+            ?.map((img) => Imagen.fromJson(img))
+            .toList() ??
+        [];
     return Especialidad(
-      idEspecialidad: json['id_especialidad'],
-      nombre: json['nombre'],
-      imagenes: (json['imagenes'] as List<dynamic>?)
-              ?.map((img) => Imagen.fromJson(img))
-              .toList() ??
-          [],
-      descripcion: json['descripcion'],
-      fechaCreacion: DateTime.parse(json['fecha_creacion']),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+      idEspecialidad: json['idEspecialidad'] ?? 0,
+      nombre: json['nombre'] ?? '',
+      imagenes: imagenes.isNotEmpty
+          ? imagenes
+          : [
+              Imagen.fromJson({
+                "url":
+                    'https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg'
+              })
+            ],
+      descripcion: json['descripcion'] ?? '',
+      fechaCreacion: json['fechaCreacion'] != null
+          ? DateTime.parse(json['fechaCreacion'])
           : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
-      deletedAt: json['deleted_at'] != null
-          ? DateTime.parse(json['deleted_at'])
-          : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      deletedAt:
+          json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
   }
 
