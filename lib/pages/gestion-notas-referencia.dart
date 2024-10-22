@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/NotasReferenciaController.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaReferencia.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-nota-referencia.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
@@ -46,7 +47,9 @@ class _GestionNotasReferenciaViewState
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(context, notasReferencia,
-          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo),
+          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo, () {}, () {
+        Navigator.pushNamed(context, RegistrarNotaReferencia.id);
+      }),
     );
   }
 }

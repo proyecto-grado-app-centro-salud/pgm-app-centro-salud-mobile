@@ -301,14 +301,11 @@ inputListSuggestionsHistoriasClinicas(
 
 Widget inputFormFieldFormatoBorderBlack(
     BuildContext context, TextEditingController controlador, String hint) {
-  double baseWidth = 375;
-  double fem = MediaQuery.of(context).size.width / baseWidth;
-  double ffem = fem * 0.97;
   return Container(
     width: double.infinity,
     decoration: BoxDecoration(
       color: Color(0xffffffff),
-      borderRadius: BorderRadius.circular(10 * fem),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(color: Color(0xff000000)),
     ),
     child: TextFormField(
@@ -320,6 +317,49 @@ Widget inputFormFieldFormatoBorderBlack(
           return null;
         }),
   );
+}
+
+Widget inputDateFormFieldFormatoBorderBlack(
+    BuildContext context,
+    TextEditingController textEditingController,
+    String hint,
+    void Function(String date) onSelectedDate) {
+  return Container(
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: Color(0xffffffff),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: Color(0xff000000)),
+    ),
+    child: TextFormField(
+      controller: textEditingController,
+      decoration: InputDecoration(
+        labelText: 'Fecha',
+        hintText: 'Selecciona una fecha',
+        suffixIcon: IconButton(
+          icon: Icon(Icons.calendar_today),
+          onPressed: () => _selectDate(context, onSelectedDate),
+        ),
+      ),
+      readOnly: true,
+      validator: (value) {
+        return null;
+      },
+    ),
+  );
+}
+
+Future<void> _selectDate(
+    BuildContext context, void Function(String date) onSelectedDate) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2101),
+  );
+  if (picked != null && picked != DateTime.now()) {
+    onSelectedDate("${picked.toLocal()}".split(' ')[0]);
+  }
 }
 
 Widget inputFormatoTextoOculto(

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaReferencia.dart';
 import 'package:http/http.dart' as http;
@@ -18,9 +21,52 @@ class NotasReferenciaController {
       if (response.statusCode != 200) {
         throw Exception('Error en la solicitud: ${response.statusCode}');
       }
-      return NotaReferencia.listFromString(response.body);
+      final body = utf8.decode(response.bodyBytes);
+      return NotaReferencia.listFromString(body);
     } catch (e) {
       throw Exception('Error al obtener especialidades: $e');
+    }
+  }
+
+  registrarNotaReferencia(
+      Map<String, TextEditingController> controllers) async {
+    NotaReferencia notaReferencia = NotaReferencia(
+        idHistoriaClinica:
+            int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
+        diagnosticoPresuntivo: controllers['diagnosticoPresuntivo']?.text ?? '',
+        datosClinicos: controllers['datosClinicos']?.text ?? '',
+        datosIngreso: controllers['datosIngreso']?.text ?? '',
+        datosEgreso: controllers['datosEgreso']?.text ?? '',
+        condicionesPacienteMomentoTransferencia:
+            controllers['condicionesPacienteMomentoTransferencia']?.text ?? '',
+        informeProcedimientosRealizados:
+            controllers['informeProcedimientosRealizados']?.text ?? '',
+        tratamientoEfectuado: controllers['tratamientoEfectuado']?.text ?? '',
+        tratamientoPersistePaciente:
+            controllers['tratamientoPersistePaciente']?.text ?? '',
+        fechaVencimiento:
+            DateTime.tryParse(controllers['fechaVencimiento']!.text) ?? null,
+        advertenciasFactoresRiesgo:
+            controllers['advertenciasFactoresRiesgo']?.text ?? '',
+        comentarioAdicional: controllers['comentarioAdicional']?.text ?? '',
+        monitoreo: controllers['monitoreo']?.text ?? '',
+        informeTrabajoSocial: controllers['informeTrabajoSocial']?.text ?? '',
+        idMedico: 1);
+    try {
+      final uri = Uri.https(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-notas-referencia/notas-referencia",
+      );
+      final response = await http.post(uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(notaReferencia.toJson()));
+      if (response.statusCode != 201) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al registrar nota de referencia: $e');
     }
   }
 }
