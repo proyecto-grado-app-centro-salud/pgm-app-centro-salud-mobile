@@ -27,15 +27,15 @@ class AppRouter {
       case (RegistrarNotaEvolucion.id):
         return MaterialPageRoute(
             builder: (_) => const RegistrarNotaEvolucion());
-      // case (RegistrarExamenComplementario.id):
-      //   return MaterialPageRoute(
-      //       builder: (_) => const RegistrarExamenComplementario());
+      case (RegistrarExamenComplementario.id):
+        return MaterialPageRoute(
+            builder: (_) => const RegistrarExamenComplementario());
       case (RegistrarNotaReferencia.id):
         return MaterialPageRoute(
             builder: (_) => const RegistrarNotaReferencia());
-      // case (RegistrarPapeletaInternacion.id):
-      //   return MaterialPageRoute(
-      //       builder: (_) => const RegistrarPapeletaInternacion());
+      case (RegistrarPapeletaInternacion.id):
+        return MaterialPageRoute(
+            builder: (_) => const RegistrarPapeletaInternacion());
       // case (RegistrarReceta.id):
       //   return MaterialPageRoute(builder: (_) => const RegistrarReceta());
       // case (RegistrarSolicitudInterconsulta.id):

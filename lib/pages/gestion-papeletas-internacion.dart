@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/PapeletasInternacionController.dart';
 import 'package:proyecto_grado_flutter/modelos/PapeletaInternacion.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-papeleta-internacion.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class GestionPapeletasInternacionView extends StatefulWidget {
   const GestionPapeletasInternacionView({super.key});
-
   @override
   State<GestionPapeletasInternacionView> createState() =>
       _GestionPapeletasInternacionViewState();
@@ -45,7 +45,9 @@ class _GestionPapeletasInternacionViewState
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(context, papeletasInternacion,
-          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo),
+          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo, () {}, () {
+        Navigator.pushNamed(context, RegistrarPapeletaInternacion.id);
+      }),
     );
   }
 }

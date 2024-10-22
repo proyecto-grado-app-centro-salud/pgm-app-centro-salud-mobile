@@ -1,44 +1,65 @@
 import 'dart:convert';
 
 class PapeletaInternacion {
-  final int id;
-  final DateTime fechaIngreso;
-  final String diagnostico;
-  final int idHistoriaClinica;
-  final String diagnosticoPresuntivo;
-  final int idPaciente;
-  final String pacientePropietario;
-  final String ciPropietario;
-  final int idMedico;
-  final String nombreMedico;
-  final int idEspecialidad;
-  final String nombreEspecialidad;
+  final int? id;
+  final DateTime? fechaIngreso;
+  final String? diagnostico;
+  final int? idHistoriaClinica;
+  final String? diagnosticoPresuntivo;
+  final int? idPaciente;
+  final String? pacientePropietario;
+  final String? ciPropietario;
+  final int? idMedico;
+  final String? nombreMedico;
+  final int? idEspecialidad;
+  final String? nombreEspecialidad;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
 
   PapeletaInternacion({
-    required this.id,
-    required this.fechaIngreso,
-    required this.diagnostico,
-    required this.idHistoriaClinica,
-    required this.diagnosticoPresuntivo,
-    required this.idPaciente,
-    required this.pacientePropietario,
-    required this.ciPropietario,
-    required this.idMedico,
-    required this.nombreMedico,
-    required this.idEspecialidad,
-    required this.nombreEspecialidad,
+    this.id,
+    this.fechaIngreso,
+    this.diagnostico,
+    this.idHistoriaClinica,
+    this.diagnosticoPresuntivo,
+    this.idPaciente,
+    this.pacientePropietario,
+    this.ciPropietario,
+    this.idMedico,
+    this.nombreMedico,
+    this.idEspecialidad,
+    this.nombreEspecialidad,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
   });
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fechaIngreso': fechaIngreso?.toIso8601String(),
+      'diagnostico': diagnostico,
+      'idHistoriaClinica': idHistoriaClinica,
+      'diagnosticoPresuntivo': diagnosticoPresuntivo,
+      'idPaciente': idPaciente,
+      'pacientePropietario': pacientePropietario,
+      'ciPropietario': ciPropietario,
+      'idMedico': idMedico,
+      'nombreMedico': nombreMedico,
+      'idEspecialidad': idEspecialidad,
+      'nombreEspecialidad': nombreEspecialidad,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'deletedAt': deletedAt?.toIso8601String(),
+    };
+  }
 
   factory PapeletaInternacion.fromJson(Map<String, dynamic> json) {
     return PapeletaInternacion(
       id: json['id'] ?? 0,
-      fechaIngreso: DateTime.parse(json['fechaIngreso']),
+      fechaIngreso: json['fechaIngreso'] != null
+          ? DateTime.parse(json['fechaIngreso'])
+          : null,
       diagnostico: json['diagnostico'] ?? '',
       idHistoriaClinica: json['idHistoriaClinica'] ?? 0,
       diagnosticoPresuntivo: json['diagnosticoPresuntivo'] ?? '',
