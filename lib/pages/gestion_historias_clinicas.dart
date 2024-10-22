@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-historia-clinica.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -128,8 +129,10 @@ class _GestionHistoriasClinicasViewState
                       //   ),
                       // ),
                       // SizedBox(height: 10),
-                      botonPrimario(
-                          context, "Registrar historia clínica", () {}),
+                      botonPrimario(context, "Registrar historia clínica", () {
+                        Navigator.pushNamed(
+                            context, RegistrarHistoriaClinica.id);
+                      }),
                       SizedBox(height: 5),
                       Container(
                         child: ListView.builder(

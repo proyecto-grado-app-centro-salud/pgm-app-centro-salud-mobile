@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class HistoriaClinica {
-  final int id;
+  final int? id;
   final String amnesis;
   final String antecedentesFamiliares;
   final String antecedentesGinecoobstetricos;
@@ -14,19 +14,19 @@ class HistoriaClinica {
   final String examenFisicoEspecial;
   final String propuestaBasicaDeConducta;
   final String tratamiento;
-  final int idPaciente;
-  final String pacientePropietario;
-  final String ciPropietario;
-  final int idMedico;
-  final String nombreMedico;
-  final int idEspecialidad;
-  final String nombreEspecialidad;
+  final int? idPaciente;
+  final String? pacientePropietario;
+  final String? ciPropietario;
+  final int? idMedico;
+  final String? nombreMedico;
+  final int? idEspecialidad;
+  final String? nombreEspecialidad;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
 
   HistoriaClinica({
-    required this.id,
+    this.id,
     required this.amnesis,
     required this.antecedentesFamiliares,
     required this.antecedentesGinecoobstetricos,
@@ -39,13 +39,13 @@ class HistoriaClinica {
     required this.examenFisicoEspecial,
     required this.propuestaBasicaDeConducta,
     required this.tratamiento,
-    required this.idPaciente,
-    required this.pacientePropietario,
-    required this.ciPropietario,
-    required this.idMedico,
-    required this.nombreMedico,
-    required this.idEspecialidad,
-    required this.nombreEspecialidad,
+    this.idPaciente,
+    this.pacientePropietario,
+    this.ciPropietario,
+    this.idMedico,
+    this.nombreMedico,
+    this.idEspecialidad,
+    this.nombreEspecialidad,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -86,5 +86,33 @@ class HistoriaClinica {
   static List<HistoriaClinica> listFromString(String list) {
     List jsonList = jsonDecode(list);
     return jsonList.map((json) => HistoriaClinica.fromJson(json)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'amnesis': amnesis,
+      'antecedentesFamiliares': antecedentesFamiliares,
+      'antecedentesGinecoobstetricos': antecedentesGinecoobstetricos,
+      'antecedentesNoPatologicos': antecedentesNoPatologicos,
+      'antecedentesPatologicos': antecedentesPatologicos,
+      'antecedentesPersonales': antecedentesPersonales,
+      'diagnosticoPresuntivo': diagnosticoPresuntivo,
+      'diagnosticosDiferenciales': diagnosticosDiferenciales,
+      'examenFisico': examenFisico,
+      'examenFisicoEspecial': examenFisicoEspecial,
+      'propuestaBasicaDeConducta': propuestaBasicaDeConducta,
+      'tratamiento': tratamiento,
+      'idPaciente': idPaciente,
+      'pacientePropietario': pacientePropietario,
+      'ciPropietario': ciPropietario,
+      'idMedico': idMedico,
+      'nombreMedico': nombreMedico,
+      'idEspecialidad': idEspecialidad,
+      'nombreEspecialidad': nombreEspecialidad,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'deletedAt': deletedAt?.toIso8601String(),
+    };
   }
 }

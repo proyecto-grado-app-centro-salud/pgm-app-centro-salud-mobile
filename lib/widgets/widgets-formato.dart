@@ -1,8 +1,11 @@
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
+import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
+import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
 import 'package:proyecto_grado_flutter/pages/unl_home_page.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
@@ -25,6 +28,34 @@ Future<void> logout(BuildContext context) async {
           Navigator.push(context, FadeRoute(page: const HomePage()));
         }),
   );
+}
+
+void mostrarMensajeExito(BuildContext context,
+    {String titulo = "Accion exitosa", String texto = ""}) {
+  ArtSweetAlert.show(
+      context: context,
+      artDialogArgs: ArtDialogArgs(
+          type: ArtSweetAlertType.success,
+          title: titulo,
+          text: texto,
+          confirmButtonText: "Aceptar",
+          onConfirm: () {
+            Navigator.pop(context);
+          }));
+}
+
+void mostrarMensajeError(BuildContext context,
+    {String titulo = "Error al realizar la accion", String texto = ""}) {
+  ArtSweetAlert.show(
+      context: context,
+      artDialogArgs: ArtDialogArgs(
+          type: ArtSweetAlertType.danger,
+          title: titulo,
+          text: texto,
+          confirmButtonText: "Aceptar",
+          onConfirm: () {
+            Navigator.pop(context);
+          }));
 }
 
 Widget cardInformacionDocumento(documento, tipoDocumento) {
@@ -198,18 +229,119 @@ Widget inputFormatoBorderBlack(
   );
 }
 
+inputListSuggestionsPacientes(BuildContext context, List<Paciente> suggestions,
+    controller, void Function(Paciente item) onSelectItemPaciente) {
+  return TypeAheadField(
+    controller: controller,
+    suggestionsCallback: (pattern) async {
+      return suggestions
+          .where((suggestion) =>
+              suggestion.ci.toLowerCase().contains(pattern.toLowerCase()))
+          .toList();
+    },
+    itemBuilder: (context, suggestion) {
+      return ListTile(
+        title: Text(suggestion.ci),
+      );
+    },
+    onSelected: (suggestion) {
+      onSelectItemPaciente(suggestion);
+    },
+  );
+}
+
+inputListSuggestionsEspecialidades(
+    BuildContext context,
+    List<Especialidad> suggestions,
+    controller,
+    void Function(Especialidad item) onSelectItemEspecialidad) {
+  return TypeAheadField(
+    controller: controller,
+    suggestionsCallback: (pattern) async {
+      return suggestions
+          .where((suggestion) =>
+              suggestion.nombre.toLowerCase().contains(pattern.toLowerCase()))
+          .toList();
+    },
+    itemBuilder: (context, suggestion) {
+      return ListTile(
+        title: Text(suggestion.nombre),
+      );
+    },
+    onSelected: (suggestion) {
+      onSelectItemEspecialidad(suggestion);
+    },
+  );
+}
+
+inputListSuggestionsHistoriasClinicas(
+    BuildContext context,
+    List<HistoriaClinica> suggestions,
+    controller,
+    void Function(HistoriaClinica item) onSelectItemHistoriaClinica) {
+  return TypeAheadField(
+    controller: controller,
+    suggestionsCallback: (pattern) async {
+      return suggestions
+          .where((suggestion) => suggestion.diagnosticoPresuntivo
+              .toLowerCase()
+              .contains(pattern.toLowerCase()))
+          .toList();
+    },
+    itemBuilder: (context, suggestion) {
+      return ListTile(
+        title: Text(suggestion.diagnosticoPresuntivo),
+      );
+    },
+    onSelected: (suggestion) {
+      onSelectItemHistoriaClinica(suggestion);
+    },
+  );
+}
+
+Widget inputListSuggestionsHistoriaClinica(
+  BuildContext context,
+  TextEditingController controlador,
+  String hint,
+  Function(String) filteredSelected,
+  List<HistoriaClinica> filteredSuggestions,
+  Function(HistoriaClinica) onSelectItem,
+) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextFormField(
+        controller: controlador,
+        onChanged: (value) {
+          filteredSelected(value);
+        },
+        decoration: InputDecoration(
+          hintText: hint,
+          border: OutlineInputBorder(),
+        ),
+      ),
+      Expanded(
+        child: ListView.builder(
+          itemCount: filteredSuggestions.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(filteredSuggestions[index].diagnosticoPresuntivo),
+              onTap: () => onSelectItem(filteredSuggestions[index]),
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
 Widget inputFormFieldFormatoBorderBlack(
-    BuildContext context, TextEditingController controlador, String hint,
-    [VoidCallback? metodoClick]) {
-  metodoClick ??= () {};
+    BuildContext context, TextEditingController controlador, String hint) {
   double baseWidth = 375;
   double fem = MediaQuery.of(context).size.width / baseWidth;
   double ffem = fem * 0.97;
   return Container(
-    margin: EdgeInsets.fromLTRB(3.5 * fem, 3.5 * fem, 3.5 * fem, 3.5 * fem),
     width: double.infinity,
-    height: 40 * fem,
-    padding: EdgeInsets.only(left: 5 * fem, right: 5 * fem),
     decoration: BoxDecoration(
       color: Color(0xffffffff),
       borderRadius: BorderRadius.circular(10 * fem),
@@ -218,7 +350,11 @@ Widget inputFormFieldFormatoBorderBlack(
     child: TextFormField(
         decoration: InputDecoration(hintText: hint),
         controller: controlador,
-        validator: (value) {}),
+        minLines: 1,
+        maxLines: null,
+        validator: (value) {
+          return null;
+        }),
   );
 }
 
@@ -575,38 +711,31 @@ Widget cardCaracteristica(String label) {
 }
 
 Widget etiquetaInputDocumento(String label) {
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: <Widget>[
-      Text(
-        label,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Colores.color5,
-          fontFamily: 'Inter',
-          fontSize: 12,
-          letterSpacing: 0,
-          fontWeight: FontWeight.normal,
-          height: 1,
+  return Container(
+    width: double.infinity,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          label,
+          style: TextStyle(
+            color: Colores.color5,
+            fontFamily: 'Inter',
+            fontSize: 12,
+            letterSpacing: 0,
+            fontWeight: FontWeight.normal,
+            height: 1,
+          ),
         ),
-      ),
-      SizedBox(width: 5),
-      iconoVerDetalleCampoDocumento(),
-    ],
+        SizedBox(width: 5),
+        iconoVerDetalleCampoDocumento(),
+      ],
+    ),
   );
 }
 
 Widget iconoVerDetalleCampoDocumento() {
-  return Container(
-    width: 15,
-    height: 17,
-    decoration: BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage('assets/images/eye.png'),
-        fit: BoxFit.fitWidth,
-      ),
-    ),
-  );
+  return Icon(Icons.remove_red_eye);
 }
 
 Widget obtenerIconoCarga(BuildContext context) {
@@ -615,26 +744,15 @@ Widget obtenerIconoCarga(BuildContext context) {
   );
 }
 
-Widget botonSiguienteFormularioDocumento([VoidCallback? metodoClick]) {
+Widget botonFormularioDocumento(String label, [VoidCallback? metodoClick]) {
   metodoClick ??= () {};
   return GestureDetector(
-    onTap: metodoClick,
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colores.color3,
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Image.asset(
-            'assets/images/flecha-derecha-blanca.png',
-            width: 16,
-            height: 16,
+      onTap: metodoClick,
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colores.color3,
           ),
-        ],
-      ),
-    ),
-  );
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(label, style: TextStyle(color: Colores.color1))));
 }

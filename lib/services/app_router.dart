@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-historia-clinica.dart';
 import 'package:proyecto_grado_flutter/pages/unl_detalle_especialidad.dart';
 import 'package:proyecto_grado_flutter/pages/unl_detalle_medico_especialista.dart';
 
@@ -14,6 +15,8 @@ class AppRouter {
         final idMedico = routeSettings.arguments as int;
         return MaterialPageRoute(
             builder: (_) => UnlDetalleMedicoEspecialista(idMedico: idMedico));
+      case (RegistrarHistoriaClinica.id):
+        return MaterialPageRoute(builder: (_) => RegistrarHistoriaClinica());
 
       default:
         return null;
