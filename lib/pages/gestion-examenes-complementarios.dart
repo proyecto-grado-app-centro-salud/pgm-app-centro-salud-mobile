@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/ExamenesComplementariosController.dart';
 import 'package:proyecto_grado_flutter/modelos/ExamenComplementario.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-examen-complementario.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -23,7 +24,7 @@ class _GestionExamenesComplementariosViewState
   }
 
   final nombreDocumento = "Examen complementario";
-  final urlImagenBanner = "assets/gestion-examen-complementario.png";
+  final urlImagenBanner = "assets/gestion-examenes-complementarios.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();
   List<ExamenComplementario> examenesComplementarios = [];
   obtenerExamenesComplementarios() async {
@@ -46,8 +47,15 @@ class _GestionExamenesComplementariosViewState
       appBar: AppBar(),
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
-      body: gestionDocumentosExpedienteClinico(context, examenesComplementarios,
-          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo),
+      body: gestionDocumentosExpedienteClinico(
+          context,
+          examenesComplementarios,
+          nombreDocumento,
+          urlImagenBanner,
+          diagnosticoPresuntivo,
+          () => {}, () {
+        Navigator.pushNamed(context, RegistrarExamenComplementario.id);
+      }),
     );
   }
 }
