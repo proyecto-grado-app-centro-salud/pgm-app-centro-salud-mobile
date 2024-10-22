@@ -1,33 +1,33 @@
 import 'dart:convert';
 
 class NotaEvolucion {
-  final int id;
-  final String cambiosPacienteResultadosTratamiento;
-  final int idHistoriaClinica;
-  final String diagnosticoPresuntivo;
-  final int idPaciente;
-  final String pacientePropietario;
-  final String ciPropietario;
-  final int idMedico;
-  final String nombreMedico;
-  final int idEspecialidad;
-  final String nombreEspecialidad;
+  final int? id;
+  final String? cambiosPacienteResultadosTratamiento;
+  final int? idHistoriaClinica;
+  final String? diagnosticoPresuntivo;
+  final int? idPaciente;
+  final String? pacientePropietario;
+  final String? ciPropietario;
+  final int? idMedico;
+  final String? nombreMedico;
+  final int? idEspecialidad;
+  final String? nombreEspecialidad;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
 
   NotaEvolucion({
-    required this.id,
-    required this.cambiosPacienteResultadosTratamiento,
-    required this.idHistoriaClinica,
-    required this.diagnosticoPresuntivo,
-    required this.idPaciente,
-    required this.pacientePropietario,
-    required this.ciPropietario,
-    required this.idMedico,
-    required this.nombreMedico,
-    required this.idEspecialidad,
-    required this.nombreEspecialidad,
+    this.id,
+    this.cambiosPacienteResultadosTratamiento,
+    this.idHistoriaClinica,
+    this.diagnosticoPresuntivo,
+    this.idPaciente,
+    this.pacientePropietario,
+    this.ciPropietario,
+    this.idMedico,
+    this.nombreMedico,
+    this.idEspecialidad,
+    this.nombreEspecialidad,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -54,6 +54,26 @@ class NotaEvolucion {
       deletedAt:
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'cambiosPacienteResultadosTratamiento':
+          cambiosPacienteResultadosTratamiento,
+      'idHistoriaClinica': idHistoriaClinica,
+      'diagnosticoPresuntivo': diagnosticoPresuntivo,
+      'idPaciente': idPaciente,
+      'pacientePropietario': pacientePropietario,
+      'ciPropietario': ciPropietario,
+      'idMedico': idMedico,
+      'nombreMedico': nombreMedico,
+      'idEspecialidad': idEspecialidad,
+      'nombreEspecialidad': nombreEspecialidad,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'deletedAt': deletedAt?.toIso8601String(),
+    };
   }
 
   static List<NotaEvolucion> listFromString(String list) {

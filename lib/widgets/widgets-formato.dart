@@ -299,42 +299,6 @@ inputListSuggestionsHistoriasClinicas(
   );
 }
 
-Widget inputListSuggestionsHistoriaClinica(
-  BuildContext context,
-  TextEditingController controlador,
-  String hint,
-  Function(String) filteredSelected,
-  List<HistoriaClinica> filteredSuggestions,
-  Function(HistoriaClinica) onSelectItem,
-) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      TextFormField(
-        controller: controlador,
-        onChanged: (value) {
-          filteredSelected(value);
-        },
-        decoration: InputDecoration(
-          hintText: hint,
-          border: OutlineInputBorder(),
-        ),
-      ),
-      Expanded(
-        child: ListView.builder(
-          itemCount: filteredSuggestions.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(filteredSuggestions[index].diagnosticoPresuntivo),
-              onTap: () => onSelectItem(filteredSuggestions[index]),
-            );
-          },
-        ),
-      ),
-    ],
-  );
-}
-
 Widget inputFormFieldFormatoBorderBlack(
     BuildContext context, TextEditingController controlador, String hint) {
   double baseWidth = 375;
@@ -485,8 +449,10 @@ Widget gestionDocumentosExpedienteClinico(
     String nombreDocumento,
     String urlImagenBanner,
     TextEditingController diagnosticoPresuntivo,
-    [VoidCallback? metodoBuscar]) {
+    [VoidCallback? metodoBuscar,
+    VoidCallback? metodoRegistrar]) {
   metodoBuscar ??= () {};
+  metodoRegistrar ??= () {};
   return Container(
     width: displayWidth(context),
     decoration: BoxDecoration(
@@ -566,8 +532,10 @@ Widget gestionDocumentosExpedienteClinico(
                   //   ),
                   // ),
                   // SizedBox(height: 10),
-                  botonPrimario(context,
-                      'Registrar ${nombreDocumento.toLowerCase()}', () {}),
+                  botonPrimario(
+                      context,
+                      'Registrar ${nombreDocumento.toLowerCase()}',
+                      metodoRegistrar),
                   SizedBox(height: 5),
                   Container(
                     child: ListView.builder(

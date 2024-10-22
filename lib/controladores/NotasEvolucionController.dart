@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaEvolucion.dart';
@@ -37,5 +38,33 @@ class NotasEvolucionController {
             notasEvolucion, diagnosticoPresuntivo);
     print(notasEvolucionRetornar);
     return notasEvolucionRetornar.cast<NotaEvolucion>();
+  }
+
+  Future<void> registrarNotaEvolucion(
+      Map<String, TextEditingController> controllers) async {
+    // TODO: obtener medico por otken
+    NotaEvolucion notaEvolucion = NotaEvolucion(
+        cambiosPacienteResultadosTratamiento:
+            controllers['cambiosPacienteResultadosTratamiento']?.text ?? '',
+        idHistoriaClinica:
+            int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
+        idMedico: 1);
+
+    try {
+      final uri = Uri.https(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-historias-clinicas/notas-evolucion",
+      );
+      final response = await http.post(uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(notaEvolucion.toJson()));
+      if (response.statusCode != 201) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al registrar la nota de evolución: $e');
+    }
   }
 }

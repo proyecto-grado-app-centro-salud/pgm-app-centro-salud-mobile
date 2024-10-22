@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/NotasEvolucionController.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaEvolucion.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-nota-evolucion.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
@@ -46,10 +47,14 @@ class _GestionNotasEvolucionViewState extends State<GestionNotasEvolucionView> {
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(context, notasEvolucion,
           nombreDocumento, urlImagenBanner, diagnosticoPresuntivo, () {
-        setState(() {
-          notasEvolucion = NotasEvolucionController().filtrarNotaEvolucion(
-              notasEvolucionAux, diagnosticoPresuntivo.text);
-        });
+        setState(
+          () {
+            notasEvolucion = NotasEvolucionController().filtrarNotaEvolucion(
+                notasEvolucionAux, diagnosticoPresuntivo.text);
+          },
+        );
+      }, () {
+        Navigator.pushNamed(context, RegistrarNotaEvolucion.id);
       }),
     );
   }
