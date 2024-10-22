@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/RecetasController.dart';
 import 'package:proyecto_grado_flutter/modelos/Receta.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-receta.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
@@ -19,7 +20,7 @@ class _GestionRecetasViewState extends State<GestionRecetasView> {
     obtenerRecetas();
   }
 
-  final nombreDocumento = "Nota evolucion";
+  final nombreDocumento = "Recetas";
   final urlImagenBanner = "assets/gestion-recetas.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();
   List<Receta> recetas = [];
@@ -42,7 +43,9 @@ class _GestionRecetasViewState extends State<GestionRecetasView> {
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(context, recetas,
-          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo),
+          nombreDocumento, urlImagenBanner, diagnosticoPresuntivo, () {}, () {
+        Navigator.pushNamed(context, RegistrarReceta.id);
+      }),
     );
   }
 }
