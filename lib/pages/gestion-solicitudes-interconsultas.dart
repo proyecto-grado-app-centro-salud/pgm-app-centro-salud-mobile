@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/SolicitudesInterconsultasController.dart';
 import 'package:proyecto_grado_flutter/modelos/SolicitudInterconsulta.dart';
+import 'package:proyecto_grado_flutter/pages/registrar-solicitud-interconsulta.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
@@ -47,12 +48,14 @@ class _GestionSolicitudesInterconsultaViewState
       drawer: NavDrawer(),
       backgroundColor: Colores.color2,
       body: gestionDocumentosExpedienteClinico(
-        context,
-        solicitudesInterconsulta,
-        nombreDocumento,
-        urlImagenBanner,
-        diagnosticoPresuntivo,
-      ),
+          context,
+          solicitudesInterconsulta,
+          nombreDocumento,
+          urlImagenBanner,
+          diagnosticoPresuntivo,
+          () {}, () {
+        Navigator.pushNamed(context, RegistrarSolicitudInterconsulta.id);
+      }),
     );
   }
 }

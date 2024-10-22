@@ -38,9 +38,9 @@ class AppRouter {
             builder: (_) => const RegistrarPapeletaInternacion());
       case (RegistrarReceta.id):
         return MaterialPageRoute(builder: (_) => const RegistrarReceta());
-      // case (RegistrarSolicitudInterconsulta.id):
-      //   return MaterialPageRoute(
-      //       builder: (_) => const RegistrarSolicitudInterconsulta());
+      case (RegistrarSolicitudInterconsulta.id):
+        return MaterialPageRoute(
+            builder: (_) => const RegistrarSolicitudInterconsulta());
       default:
         return null;
     }

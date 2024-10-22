@@ -1,41 +1,41 @@
 import 'dart:convert';
 
 class SolicitudInterconsulta {
-  final int id;
-  final String hospitalInterconsultado;
-  final String unidadInterconsultada;
-  final String queDeseaSaber;
-  final String sintomatologia;
-  final String tratamiento;
-  final int idHistoriaClinica;
-  final String diagnosticoPresuntivo;
-  final int idPaciente;
-  final String pacientePropietario;
-  final String ciPropietario;
-  final int idMedico;
-  final String nombreMedico;
-  final int idEspecialidad;
-  final String nombreEspecialidad;
+  final int? id;
+  final String? hospitalInterconsultado;
+  final String? unidadInterconsultada;
+  final String? queDeseaSaber;
+  final String? sintomatologia;
+  final String? tratamiento;
+  final int? idHistoriaClinica;
+  final String? diagnosticoPresuntivo;
+  final int? idPaciente;
+  final String? pacientePropietario;
+  final String? ciPropietario;
+  final int? idMedico;
+  final String? nombreMedico;
+  final int? idEspecialidad;
+  final String? nombreEspecialidad;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
 
   SolicitudInterconsulta({
-    required this.id,
-    required this.hospitalInterconsultado,
-    required this.unidadInterconsultada,
-    required this.queDeseaSaber,
-    required this.sintomatologia,
-    required this.tratamiento,
-    required this.idHistoriaClinica,
-    required this.diagnosticoPresuntivo,
-    required this.idPaciente,
-    required this.pacientePropietario,
-    required this.ciPropietario,
-    required this.idMedico,
-    required this.nombreMedico,
-    required this.idEspecialidad,
-    required this.nombreEspecialidad,
+    this.id,
+    this.hospitalInterconsultado,
+    this.unidadInterconsultada,
+    this.queDeseaSaber,
+    this.sintomatologia,
+    this.tratamiento,
+    this.idHistoriaClinica,
+    this.diagnosticoPresuntivo,
+    this.idPaciente,
+    this.pacientePropietario,
+    this.ciPropietario,
+    this.idMedico,
+    this.nombreMedico,
+    this.idEspecialidad,
+    this.nombreEspecialidad,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -65,6 +65,28 @@ class SolicitudInterconsulta {
       deletedAt:
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'hospitalInterconsultado': hospitalInterconsultado,
+      'unidadInterconsultada': unidadInterconsultada,
+      'queDeseaSaber': queDeseaSaber,
+      'sintomatologia': sintomatologia,
+      'tratamiento': tratamiento,
+      'idHistoriaClinica': idHistoriaClinica,
+      'diagnosticoPresuntivo': diagnosticoPresuntivo,
+      'idPaciente': idPaciente,
+      'pacientePropietario': pacientePropietario,
+      'ciPropietario': ciPropietario,
+      'idMedico': idMedico,
+      'nombreMedico': nombreMedico,
+      'idEspecialidad': idEspecialidad,
+      'nombreEspecialidad': nombreEspecialidad,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'deletedAt': deletedAt?.toIso8601String(),
+    };
   }
 
   static List<SolicitudInterconsulta> listFromString(String list) {
