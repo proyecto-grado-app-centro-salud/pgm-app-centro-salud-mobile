@@ -24,7 +24,7 @@ class NotasReferenciaController {
       final body = utf8.decode(response.bodyBytes);
       return NotaReferencia.listFromString(body);
     } catch (e) {
-      throw Exception('Error al obtener especialidades: $e');
+      throw Exception('Error al obtener notas referencia de paciente: $e');
     }
   }
 
@@ -67,6 +67,51 @@ class NotasReferenciaController {
       }
     } catch (e) {
       throw Exception('Error al registrar nota de referencia: $e');
+    }
+  }
+
+  Future<List<NotaReferencia>> obtenerNotasReferenciaPaciente(
+      int idPaciente) async {
+    try {
+      final uri = Uri.http(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-notas-referencia/notas-referencia/paciente/$idPaciente",
+      );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return NotaReferencia.listFromString(body);
+    } catch (e) {
+      throw Exception('Error al obtener notas referencia: $e');
+    }
+  }
+
+  Future<NotaReferencia> obtenerNotaReferencia(int idNotaReferencia) async {
+    try {
+      final uri = Uri.http(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-notas-referencia/notas-referencia/$idNotaReferencia",
+      );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return NotaReferencia.fromJson(jsonDecode(body));
+    } catch (e) {
+      throw Exception('Error al obtener nota referencia por id: $e');
     }
   }
 }
