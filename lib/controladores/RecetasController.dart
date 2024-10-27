@@ -67,4 +67,48 @@ class RecetasController {
       throw Exception('Error al registrar receta: $e');
     }
   }
+
+  Future<List<Receta>> obtenerRecetasPaciente(int idPaciente) async {
+    try {
+      final uri = Uri.http(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-recetas/recetas/paciente/$idPaciente",
+      );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return Receta.listFromString(body);
+    } catch (e) {
+      throw Exception('Error al obtener recetas paciente: $e');
+    }
+  }
+
+  Future<Receta> obtenerReceta(int idReceta) async {
+    try {
+      final uri = Uri.http(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-recetas/recetas/$idReceta",
+      );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return Receta.fromJson(jsonDecode(body));
+    } catch (e) {
+      throw Exception('Error al obtener receta por id: $e');
+    }
+  }
 }
