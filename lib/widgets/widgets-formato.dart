@@ -58,7 +58,8 @@ void mostrarMensajeError(BuildContext context,
           }));
 }
 
-Widget cardInformacionDocumento(documento, tipoDocumento) {
+Widget cardInformacionDocumento(documento, tipoDocumento,
+    [VoidCallback? metodoEditar]) {
   return Container(
     margin: EdgeInsets.all(10),
     decoration: BoxDecoration(
@@ -95,23 +96,25 @@ Widget cardInformacionDocumento(documento, tipoDocumento) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Column(
-                children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    child: Icon(
-                      Icons.edit,
-                      color: Colores.color1,
-                      size: 18,
-                    ),
-                  ),
-                  Text('Editar',
-                      style: TextStyle(color: Colores.color1, fontSize: 10)),
-                ],
-              ),
+              ((metodoEditar != null)
+                  ? Column(
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          child: Icon(
+                            Icons.edit,
+                            color: Colores.color1,
+                            size: 18,
+                          ),
+                        ),
+                        Text('Editar',
+                            style:
+                                TextStyle(color: Colores.color1, fontSize: 10)),
+                      ],
+                    )
+                  : const SizedBox()),
               SizedBox(width: 10),
-              // botonIcono('assets/editar.svg'),
               Column(
                 children: [
                   Container(
@@ -124,7 +127,6 @@ Widget cardInformacionDocumento(documento, tipoDocumento) {
                       style: TextStyle(color: Colores.color1, fontSize: 10)),
                 ],
               ),
-              // botonIcono('assets/adelante.svg'),
             ],
           ),
         ),
@@ -207,24 +209,21 @@ Widget inputFormato(
 }
 
 Widget inputFormatoBorderBlack(
-    BuildContext context, TextEditingController controlador, String hint) {
-  double baseWidth = 375;
-  double fem = MediaQuery.of(context).size.width / baseWidth;
-  double ffem = fem * 0.97;
+    BuildContext context, TextEditingController controlador, String hint,
+    {bool readOnly = false}) {
   return Container(
-    // frame1Fyh (1:3)
-    margin: EdgeInsets.fromLTRB(3.5 * fem, 3.5 * fem, 3.5 * fem, 3.5 * fem),
     width: double.infinity,
-    height: 40 * fem,
-    padding: EdgeInsets.only(left: 5 * fem, right: 5 * fem),
     decoration: BoxDecoration(
       color: Color(0xffffffff),
-      borderRadius: BorderRadius.circular(10 * fem),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(color: Color(0xff000000)),
     ),
     child: TextField(
+      readOnly: readOnly,
       decoration: InputDecoration(hintText: hint),
       controller: controlador,
+      minLines: 1,
+      maxLines: null,
     ),
   );
 }
@@ -483,6 +482,80 @@ Widget titulo(BuildContext context, String titulo) {
   );
 }
 
+Widget obtenerVistaMisDocumentosExpedienteClinico(
+    BuildContext context,
+    List documentos,
+    String nombreDocumento,
+    String urlImagenBanner,
+    TextEditingController diagnosticoPresuntivo,
+    [VoidCallback? metodoBuscar]) {
+  return Container(
+    width: displayWidth(context),
+    decoration: BoxDecoration(
+      color: Colores.color2,
+    ),
+    child: Stack(
+      children: <Widget>[
+        Positioned(
+          top: 0,
+          left: 0,
+          child: Container(
+            width: displayWidth(context),
+            height: displayHeight(context) * 0.3,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(urlImagenBanner),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 180,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          child: SingleChildScrollView(
+            child: Container(
+              width: displayWidth(context),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                  bottomLeft: Radius.circular(0),
+                  bottomRight: Radius.circular(0),
+                ),
+                color: Colores.color2,
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'Mis ${nombreDocumento.toLowerCase()}s',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colores.color5,
+                        fontFamily: 'Inter',
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  obtenerListadoDocumentosClinicos(context, nombreDocumento,
+                      diagnosticoPresuntivo, documentos, metodoBuscar)
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget gestionDocumentosExpedienteClinico(
     BuildContext context,
     List documentos,
@@ -491,7 +564,6 @@ Widget gestionDocumentosExpedienteClinico(
     TextEditingController diagnosticoPresuntivo,
     [VoidCallback? metodoBuscar,
     VoidCallback? metodoRegistrar]) {
-  metodoBuscar ??= () {};
   metodoRegistrar ??= () {};
   return Container(
     width: displayWidth(context),
@@ -548,46 +620,13 @@ Widget gestionDocumentosExpedienteClinico(
                     ),
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    'Diagnóstico presuntivo',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: Colores.color5,
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
-                  SizedBox(height: 10),
-                  botonPrimario(context, "Buscar", metodoBuscar),
-                  SizedBox(height: 10),
-                  // Text(
-                  //   'Búsqueda avanzada',
-                  //   textAlign: TextAlign.start,
-                  //   style: TextStyle(
-                  //     color: Colores.color5,
-                  //     fontFamily: 'Inter',
-                  //     fontSize: 12,
-                  //   ),
-                  // ),
-                  // SizedBox(height: 10),
                   botonPrimario(
                       context,
                       'Registrar ${nombreDocumento.toLowerCase()}',
                       metodoRegistrar),
                   SizedBox(height: 5),
-                  Container(
-                    child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: documentos.length,
-                      itemBuilder: (context, index) {
-                        return cardInformacionDocumento(
-                            documentos[index], nombreDocumento);
-                      },
-                    ),
-                  ),
+                  obtenerListadoDocumentosClinicos(context, nombreDocumento,
+                      diagnosticoPresuntivo, documentos, metodoBuscar)
                 ],
               ),
             ),
@@ -595,6 +634,43 @@ Widget gestionDocumentosExpedienteClinico(
         ),
       ],
     ),
+  );
+}
+
+Widget obtenerListadoDocumentosClinicos(
+    BuildContext context,
+    String nombreDocumento,
+    TextEditingController diagnosticoPresuntivo,
+    List documentos,
+    [VoidCallback? metodoBuscar]) {
+  metodoBuscar ??= () {};
+  return Column(
+    children: [
+      Text(
+        'Diagnóstico presuntivo',
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          color: Colores.color5,
+          fontFamily: 'Inter',
+          fontSize: 12,
+        ),
+      ),
+      SizedBox(height: 5),
+      inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
+      SizedBox(height: 10),
+      botonPrimario(context, "Buscar", metodoBuscar),
+      SizedBox(height: 10),
+      Container(
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: documentos.length,
+          itemBuilder: (context, index) {
+            return cardInformacionDocumento(documentos[index], nombreDocumento);
+          },
+        ),
+      ),
+    ],
   );
 }
 
