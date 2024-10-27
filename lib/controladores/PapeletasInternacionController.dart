@@ -55,4 +55,29 @@ class PapeletasInternacionController {
       throw Exception('Error al registrar papeleta internacion: $e');
     }
   }
+
+  Future<List<PapeletaInternacion>> obtenerPapeletasInternacionPaciente(
+      int idPaciente) async {
+    try {
+      final uri = Uri.http(
+        dotenv.env["API_URL"]!,
+        "/api/microservicio-papeletas-internacion/papeletas-internacion/paciente/$idPaciente",
+      );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error en la solicitud: ${response.statusCode}');
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return PapeletaInternacion.listFromString(body);
+    } catch (e) {
+      throw Exception('Error al obtener papeletas internacion de paciente: $e');
+    }
+  }
+
+  obtenerPapeletaInternacion(int idPapeletaInternacion) {}
 }
