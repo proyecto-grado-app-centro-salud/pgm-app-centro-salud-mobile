@@ -8,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class GestionRecetasView extends StatefulWidget {
   const GestionRecetasView({super.key});
-
+  static const id = "gestion-recetas";
   @override
   State<GestionRecetasView> createState() => _GestionRecetasViewState();
 }

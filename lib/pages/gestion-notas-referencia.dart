@@ -8,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class GestionNotasReferenciaView extends StatefulWidget {
   const GestionNotasReferenciaView({super.key});
-
+  static const id = "gestion-notas-referencia";
   @override
   State<GestionNotasReferenciaView> createState() =>
       _GestionNotasReferenciaViewState();

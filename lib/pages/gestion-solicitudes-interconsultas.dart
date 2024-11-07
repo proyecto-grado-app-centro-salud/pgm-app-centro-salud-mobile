@@ -8,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class GestionSolicitudesInterconsultaView extends StatefulWidget {
   const GestionSolicitudesInterconsultaView({super.key});
-
+  static const id = "gestion-solicitudes-interconsultas";
   @override
   State<GestionSolicitudesInterconsultaView> createState() =>
       _GestionSolicitudesInterconsultaViewState();

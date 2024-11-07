@@ -8,6 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class GestionPapeletasInternacionView extends StatefulWidget {
   const GestionPapeletasInternacionView({super.key});
+  static const id = "gestion-papeletas-internacion";
   @override
   State<GestionPapeletasInternacionView> createState() =>
       _GestionPapeletasInternacionViewState();

@@ -6,6 +6,7 @@ import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
+import 'package:proyecto_grado_flutter/pages/detalle-historia-clinica.dart';
 import 'package:proyecto_grado_flutter/pages/unl_home_page.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
@@ -58,8 +59,8 @@ void mostrarMensajeError(BuildContext context,
           }));
 }
 
-Widget cardInformacionDocumento(documento, tipoDocumento,
-    [VoidCallback? metodoEditar]) {
+Widget cardInformacionDocumento(BuildContext context, documento, tipoDocumento,
+    [Function(dynamic)? metodoEditar, Function(dynamic)? metodoVerDetalle]) {
   return Container(
     margin: EdgeInsets.all(10),
     decoration: BoxDecoration(
@@ -97,36 +98,49 @@ Widget cardInformacionDocumento(documento, tipoDocumento,
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               ((metodoEditar != null)
-                  ? Column(
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          child: Icon(
-                            Icons.edit,
-                            color: Colores.color1,
-                            size: 18,
+                  ? GestureDetector(
+                      onTap: () {
+                        metodoEditar(documento.id);
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            child: Icon(
+                              Icons.edit,
+                              color: Colores.color1,
+                              size: 18,
+                            ),
                           ),
-                        ),
-                        Text('Editar',
-                            style:
-                                TextStyle(color: Colores.color1, fontSize: 10)),
-                      ],
+                          Text('Editar',
+                              style: TextStyle(
+                                  color: Colores.color1, fontSize: 10)),
+                        ],
+                      ),
                     )
                   : const SizedBox()),
-              SizedBox(width: 10),
-              Column(
-                children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    child: Icon(Icons.arrow_circle_right_outlined,
-                        color: Colores.color1, size: 18),
-                  ),
-                  Text('Ver detalle',
-                      style: TextStyle(color: Colores.color1, fontSize: 10)),
-                ],
-              ),
+              const SizedBox(),
+              ((metodoVerDetalle != null)
+                  ? GestureDetector(
+                      onTap: () {
+                        metodoVerDetalle(documento.id);
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            child: Icon(Icons.arrow_circle_right_outlined,
+                                color: Colores.color1, size: 18),
+                          ),
+                          Text('Ver detalle',
+                              style: TextStyle(
+                                  color: Colores.color1, fontSize: 10)),
+                        ],
+                      ),
+                    )
+                  : const SizedBox()),
             ],
           ),
         ),
@@ -488,7 +502,8 @@ Widget obtenerVistaMisDocumentosExpedienteClinico(
     String nombreDocumento,
     String urlImagenBanner,
     TextEditingController diagnosticoPresuntivo,
-    [VoidCallback? metodoBuscar]) {
+    [VoidCallback? metodoBuscar,
+    Function(dynamic)? metodoVerDetalle]) {
   return Container(
     width: displayWidth(context),
     decoration: BoxDecoration(
@@ -544,8 +559,14 @@ Widget obtenerVistaMisDocumentosExpedienteClinico(
                     ),
                   ),
                   SizedBox(height: 5),
-                  obtenerListadoDocumentosClinicos(context, nombreDocumento,
-                      diagnosticoPresuntivo, documentos, metodoBuscar)
+                  obtenerListadoDocumentosClinicos(
+                      context,
+                      nombreDocumento,
+                      diagnosticoPresuntivo,
+                      documentos,
+                      metodoBuscar,
+                      null,
+                      metodoVerDetalle)
                 ],
               ),
             ),
@@ -563,7 +584,9 @@ Widget gestionDocumentosExpedienteClinico(
     String urlImagenBanner,
     TextEditingController diagnosticoPresuntivo,
     [VoidCallback? metodoBuscar,
-    VoidCallback? metodoRegistrar]) {
+    VoidCallback? metodoRegistrar,
+    Function(dynamic)? metodoEditar,
+    Function(dynamic)? metodoVerDetalle]) {
   metodoRegistrar ??= () {};
   return Container(
     width: displayWidth(context),
@@ -625,8 +648,14 @@ Widget gestionDocumentosExpedienteClinico(
                       'Registrar ${nombreDocumento.toLowerCase()}',
                       metodoRegistrar),
                   SizedBox(height: 5),
-                  obtenerListadoDocumentosClinicos(context, nombreDocumento,
-                      diagnosticoPresuntivo, documentos, metodoBuscar)
+                  obtenerListadoDocumentosClinicos(
+                      context,
+                      nombreDocumento,
+                      diagnosticoPresuntivo,
+                      documentos,
+                      metodoBuscar,
+                      metodoEditar,
+                      metodoVerDetalle)
                 ],
               ),
             ),
@@ -642,7 +671,9 @@ Widget obtenerListadoDocumentosClinicos(
     String nombreDocumento,
     TextEditingController diagnosticoPresuntivo,
     List documentos,
-    [VoidCallback? metodoBuscar]) {
+    [VoidCallback? metodoBuscar,
+    Function(dynamic)? metodoEditar,
+    Function(dynamic)? metodoVerDetalle]) {
   metodoBuscar ??= () {};
   return Column(
     children: [
@@ -666,7 +697,8 @@ Widget obtenerListadoDocumentosClinicos(
           shrinkWrap: true,
           itemCount: documentos.length,
           itemBuilder: (context, index) {
-            return cardInformacionDocumento(documentos[index], nombreDocumento);
+            return cardInformacionDocumento(context, documentos[index],
+                nombreDocumento, metodoEditar, metodoVerDetalle);
           },
         ),
       ),
@@ -839,4 +871,28 @@ Widget botonFormularioDocumento(String label, [VoidCallback? metodoClick]) {
           ),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(label, style: TextStyle(color: Colores.color1))));
+}
+
+Widget opcionMenu(
+    BuildContext context, String titulo, VoidCallback metodoRedirecion) {
+  return Center(
+      child: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.all(10),
+          width: MediaQuery.of(context).size.width * 0.8,
+          decoration: BoxDecoration(
+              color: Colores.color4, borderRadius: BorderRadius.circular(10)),
+          child: TextButton(
+            onPressed: () => {metodoRedirecion()},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  titulo,
+                  style: TextStyle(color: Colors.white),
+                )
+              ],
+            ),
+          )));
 }
