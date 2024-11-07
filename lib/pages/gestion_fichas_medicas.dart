@@ -4,48 +4,29 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/pages/registrar_ficha_medica.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GestionFichasMedicas extends StatefulWidget {
   const GestionFichasMedicas({super.key});
-
+  static const id = "gestion-fichas-medicas";
   @override
   State<GestionFichasMedicas> createState() => _GestionFichasMedicasState();
 }
 
 class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
-  /*List fichasMedicas = [
-    [1, "A12", "turno mañana", "medico1", "ginecologia"],
-    [2, "A15", "turno mañana", "medico3", "neurologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"],
-    [3, "B12", "turno tarde", "medico3", "traumatologia"]
-  ];*/
-  List fichasMedicas =[];
+  dynamic fichasMedicas = [];
+  AuthController authController = new AuthController();
   @override
   void initState() {
-    // TODO: implement initState
+    authController
+        .obtenerIdUsuario()
+        .then((idUsuario) => obtenerFichasMedicasPaciente(idUsuario));
     super.initState();
-    obtenerFichasMedicas();
   }
 
   @override
@@ -113,7 +94,10 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                                       FontWeight.bold))),
                                       Expanded(
                                           flex: 1,
-                                          child: Text(fichaMedica[7]??"",
+                                          child: Text(
+                                              fichaMedica[
+                                                      'fechaTurnoAtencionMedica'] ??
+                                                  "",
                                               style: const TextStyle(
                                                   color: Colors.white))),
                                     ],
@@ -130,7 +114,9 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                                       FontWeight.bold))),
                                       Expanded(
                                           flex: 1,
-                                          child: Text(fichaMedica[4]??"",
+                                          child: Text(
+                                              '${fichaMedica['horaInicio']} ${fichaMedica['horaFin']}' ??
+                                                  "",
                                               style: const TextStyle(
                                                   color: Colors.white))),
                                     ],
@@ -147,7 +133,8 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                                       FontWeight.bold))),
                                       Expanded(
                                           flex: 1,
-                                          child: Text(fichaMedica[6]??"",
+                                          child: Text(
+                                              fichaMedica['nombreMedico'] ?? "",
                                               style: const TextStyle(
                                                   color: Colors.white))),
                                     ],
@@ -164,7 +151,10 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                                       FontWeight.bold))),
                                       Expanded(
                                           flex: 1,
-                                          child: Text(fichaMedica[5]??"",
+                                          child: Text(
+                                              fichaMedica[
+                                                      'nombreEspecialidad'] ??
+                                                  "",
                                               style: const TextStyle(
                                                   color: Colors.white))),
                                     ],
@@ -178,10 +168,13 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight:
-                                                  FontWeight.bold))),
+                                                      FontWeight.bold))),
                                       Expanded(
                                           flex: 1,
-                                          child: Text(fichaMedica[2]?.toString()??"",
+                                          child: Text(
+                                              fichaMedica['numeroFicha']
+                                                      ?.toString() ??
+                                                  "",
                                               style: const TextStyle(
                                                   color: Colors.white))),
                                     ],
@@ -205,7 +198,8 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
                                                   color: Colors.white),
                                               onPressed: () {
                                                 eliminarFichaMedicas(
-                                                    fichaMedica[0]);
+                                                    fichaMedica[
+                                                        'idConsultaMedica']);
                                               },
                                             ),
                                           ))
@@ -221,32 +215,31 @@ class _GestionFichasMedicasState extends State<GestionFichasMedicas> {
     ;
   }
 
-  void obtenerFichasMedicas() {
-    int idPaciente = 1;
+  void obtenerFichasMedicasPaciente(idPaciente) {
     http.get(
         Uri.http(dotenv.env["API_URL"]!,
             "/api/microservicio-fichas-medicas/fichas-medicas/detalle/paciente/${idPaciente}"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         }).then((response) async {
-      var fichasMedicasPeticion = (json.decode(response.body));
+      final body = utf8.decode(response.bodyBytes);
+      var fichasMedicasPeticion = (json.decode(body));
       setState(() {
         print(fichasMedicasPeticion);
         fichasMedicas = fichasMedicasPeticion;
       });
-
     });
   }
 
-  void eliminarFichaMedicas(int idFichaMedica) {
-    int idPaciente = 1;
+  void eliminarFichaMedicas(int idFichaMedica) async {
     http.delete(
-        Uri.http(dotenv.env["API_URL"]!,
+        Uri.https(dotenv.env["API_URL"]!,
             "/api/microservicio-fichas-medicas/fichas-medicas/${idFichaMedica}"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         }).then((response) async {
-          obtenerFichasMedicas();
+      int idPaciente = await authController.obtenerIdUsuario();
+      obtenerFichasMedicasPaciente(idPaciente);
       if (response.statusCode == 200) {
         ArtSweetAlert.show(
             context: context,
