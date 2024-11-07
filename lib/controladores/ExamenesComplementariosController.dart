@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/modelos/ExamenComplementario.dart';
 import 'package:http/http.dart' as http;
 
 class ExamenesComplementariosController {
+  AuthController authController = AuthController();
   obtenerExamenesComplementarios() async {
     try {
       final uri = Uri.http(
@@ -31,10 +33,11 @@ class ExamenesComplementariosController {
 
   registrarExamenComplementario(
       Map<String, TextEditingController> controllers) async {
+    int idMedico = await authController.obtenerIdUsuario();
     ExamenComplementario examenComplementario = ExamenComplementario(
       idHistoriaClinica:
           int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
-      idMedico: 1,
+      idMedico: idMedico,
       nombre: controllers['nombre']?.text ?? '',
       descripcion: controllers['descripcion']?.text ?? '',
       resumenResultados: controllers['resumenResultados']?.text ?? '',

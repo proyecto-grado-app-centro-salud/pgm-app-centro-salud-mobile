@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaEvolucion.dart';
 import 'package:http/http.dart' as http;
 import 'package:proyecto_grado_flutter/modelos/PapeletaInternacion.dart';
 import 'package:proyecto_grado_flutter/modelos/Receta.dart';
 
 class RecetasController {
+  AuthController authController = AuthController();
   Future<List<Receta>> obtenerRecetas() async {
     try {
       final uri = Uri.http(
@@ -31,6 +33,7 @@ class RecetasController {
   }
 
   registrarReceta(Map<String, TextEditingController> controllers) async {
+    int idMedico = await authController.obtenerIdUsuario();
     Receta receta = Receta(
         nombreGenericoMedicamentoPrescrito:
             controllers['nombreGenericoMedicamentoPrescrito']?.text ?? '',
@@ -49,7 +52,7 @@ class RecetasController {
             controllers['indicacionesEspeciales']?.text ?? '',
         idHistoriaClinica:
             int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
-        idMedico: 1);
+        idMedico: idMedico);
     try {
       final uri = Uri.https(
         dotenv.env["API_URL"]!,

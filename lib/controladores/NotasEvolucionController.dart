@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaEvolucion.dart';
 import 'package:http/http.dart' as http;
 import 'package:proyecto_grado_flutter/services/documentos_service.dart';
 
 class NotasEvolucionController {
+  AuthController authController = AuthController();
   Future<List<NotaEvolucion>> obtenerNotasEvolucion() async {
     try {
       final uri = Uri.http(
@@ -42,13 +44,14 @@ class NotasEvolucionController {
 
   Future<void> registrarNotaEvolucion(
       Map<String, TextEditingController> controllers) async {
-    // TODO: obtener medico por otken
+    int idMedico = await authController.obtenerIdUsuario();
+
     NotaEvolucion notaEvolucion = NotaEvolucion(
         cambiosPacienteResultadosTratamiento:
             controllers['cambiosPacienteResultadosTratamiento']?.text ?? '',
         idHistoriaClinica:
             int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
-        idMedico: 1);
+        idMedico: idMedico);
 
     try {
       final uri = Uri.https(

@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaReferencia.dart';
 import 'package:http/http.dart' as http;
 
 class NotasReferenciaController {
+  AuthController authController = AuthController();
   Future<List<NotaReferencia>> obtenerNotasReferencia() async {
     try {
       final uri = Uri.http(
@@ -30,6 +33,7 @@ class NotasReferenciaController {
 
   registrarNotaReferencia(
       Map<String, TextEditingController> controllers) async {
+    int idMedico = await authController.obtenerIdUsuario();
     NotaReferencia notaReferencia = NotaReferencia(
         idHistoriaClinica:
             int.tryParse(controllers['idHistoriaClinica']!.text) ?? 0,
@@ -51,7 +55,7 @@ class NotasReferenciaController {
         comentarioAdicional: controllers['comentarioAdicional']?.text ?? '',
         monitoreo: controllers['monitoreo']?.text ?? '',
         informeTrabajoSocial: controllers['informeTrabajoSocial']?.text ?? '',
-        idMedico: 1);
+        idMedico: idMedico);
     try {
       final uri = Uri.https(
         dotenv.env["API_URL"]!,

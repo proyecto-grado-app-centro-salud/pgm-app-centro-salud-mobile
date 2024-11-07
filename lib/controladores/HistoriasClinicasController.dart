@@ -1,5 +1,6 @@
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
@@ -7,6 +8,7 @@ import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 import 'package:proyecto_grado_flutter/services/documentos_service.dart';
 
 class HistoriasClinicasController {
+  AuthController authController = AuthController();
   Future<List<HistoriaClinica>> obtenerHistoriasClinicas() async {
     try {
       final uri = Uri.http(
@@ -41,7 +43,7 @@ class HistoriasClinicasController {
 
   Future<void> registrarHistoriaClinica(
       Map<String, TextEditingController> controllers) async {
-    // TODO: obtener medico de token
+    int idMedico = await authController.obtenerIdUsuario();
     HistoriaClinica historiaClinica = HistoriaClinica(
         amnesis:
             controllers['condicionesActualesDeSaludOEnfermedad']?.text ?? '',
@@ -65,7 +67,7 @@ class HistoriasClinicasController {
         tratamiento: controllers['tratamiento']?.text ?? '',
         idPaciente: int.tryParse(controllers['idPaciente']!.text) ?? 0,
         idEspecialidad: int.tryParse(controllers['idEspecialidad']!.text) ?? 0,
-        idMedico: 1);
+        idMedico: idMedico);
     try {
       final uri = Uri.https(
         dotenv.env["API_URL"]!,
@@ -131,6 +133,7 @@ class HistoriasClinicasController {
 
   actualizarHistoriaClinica(Map<String, TextEditingController> controllers,
       int idHistoriaClinica) async {
+    int idMedico = await authController.obtenerIdUsuario();
     HistoriaClinica historiaClinica = HistoriaClinica(
         amnesis:
             controllers['condicionesActualesDeSaludOEnfermedad']?.text ?? '',
@@ -154,7 +157,7 @@ class HistoriasClinicasController {
         tratamiento: controllers['tratamiento']?.text ?? '',
         idPaciente: int.tryParse(controllers['idPaciente']!.text) ?? 0,
         idEspecialidad: int.tryParse(controllers['idEspecialidad']!.text) ?? 0,
-        idMedico: 1);
+        idMedico: idMedico);
     try {
       final uri = Uri.https(
         dotenv.env["API_URL"]!,
