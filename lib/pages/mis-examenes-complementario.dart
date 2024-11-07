@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/ExamenesComplementariosController.dart';
 import 'package:proyecto_grado_flutter/modelos/ExamenComplementario.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
@@ -7,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class MisExamenesComplementariosView extends StatefulWidget {
   const MisExamenesComplementariosView({super.key});
-
+  static const id = "mis-examenes-complementarios";
   @override
   State<MisExamenesComplementariosView> createState() =>
       _MisExamenesComplementariosViewState();
@@ -18,11 +19,12 @@ class _MisExamenesComplementariosViewState
   @override
   void initState() {
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
-    obtenerExamenesComplementariosPaciente(idPaciente);
+    _authController
+        .obtenerIdUsuario()
+        .then((idUsuario) => obtenerExamenesComplementariosPaciente(idUsuario));
   }
 
+  final _authController = AuthController();
   final nombreDocumento = "Examen complementario";
   final urlImagenBanner = "assets/gestion-examenes-complementarios.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/PapeletasInternacionController.dart';
 import 'package:proyecto_grado_flutter/modelos/PapeletaInternacion.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
@@ -7,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class MisPapeletasInternacionView extends StatefulWidget {
   const MisPapeletasInternacionView({super.key});
-
+  static const id = "mis-papeletas-internacion";
   @override
   State<MisPapeletasInternacionView> createState() =>
       _MisPapeletasInternacionViewState();
@@ -18,11 +19,12 @@ class _MisPapeletasInternacionViewState
   @override
   void initState() {
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
-    obtenerPapeletasInternacionPaciente(idPaciente);
+    _authController
+        .obtenerIdUsuario()
+        .then((idUsuario) => obtenerPapeletasInternacionPaciente(idUsuario));
   }
 
+  final _authController = AuthController();
   final nombreDocumento = "Papeleta de Internacion";
   final urlImagenBanner = "assets/gestion-papeletas-internacion.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();

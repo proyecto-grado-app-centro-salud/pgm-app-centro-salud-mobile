@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController.dart';
 import 'package:proyecto_grado_flutter/controladores/NotasEvolucionController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
@@ -9,20 +10,20 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class MisNotasEvolucionView extends StatefulWidget {
   const MisNotasEvolucionView({super.key});
-
+  static const id = "mis-notas-evolucion";
   @override
   State<MisNotasEvolucionView> createState() => _MisNotasEvolucionViewState();
 }
 
 class _MisNotasEvolucionViewState extends State<MisNotasEvolucionView> {
-  @override
   void initState() {
+    authController
+        .obtenerIdUsuario()
+        .then((idUsuario) => obtenerNotasEvolucionPaciente(idUsuario));
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
-    obtenerNotasEvolucionPaciente(idPaciente);
   }
 
+  AuthController authController = AuthController();
   final nombreDocumento = "Historia Clinica";
   final urlImagenBanner = "assets/gestion-historias-clinicas.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();

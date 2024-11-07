@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/NotasReferenciaController.dart';
 import 'package:proyecto_grado_flutter/modelos/NotaReferencia.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
@@ -7,7 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class MisNotasReferenciaView extends StatefulWidget {
   const MisNotasReferenciaView({super.key});
-
+  static const id = "mis-notas-referencia";
   @override
   State<MisNotasReferenciaView> createState() => _MisNotasReferenciaViewState();
 }
@@ -16,11 +17,12 @@ class _MisNotasReferenciaViewState extends State<MisNotasReferenciaView> {
   @override
   void initState() {
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
-    obtenerNotasReferenciaPaciente(idPaciente);
+    _authController
+        .obtenerIdUsuario()
+        .then((idUsuario) => obtenerNotasReferenciaPaciente(idUsuario));
   }
 
+  final _authController = AuthController();
   final nombreDocumento = "Nota de Referencia";
   final urlImagenBanner = "assets/gestion-notas-referencia.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();

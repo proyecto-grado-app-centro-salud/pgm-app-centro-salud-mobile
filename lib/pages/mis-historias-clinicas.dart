@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
+import 'package:proyecto_grado_flutter/pages/detalle-historia-clinica.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
+import 'package:proyecto_grado_flutter/util/transiciones.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class MisHistoriasClinicasView extends StatefulWidget {
   const MisHistoriasClinicasView({super.key});
-
+  static const id = "mis-historias-clinicas";
   @override
   State<MisHistoriasClinicasView> createState() =>
       _MisHistoriasClinicasViewState();
@@ -16,12 +19,12 @@ class MisHistoriasClinicasView extends StatefulWidget {
 class _MisHistoriasClinicasViewState extends State<MisHistoriasClinicasView> {
   @override
   void initState() {
+    authController.obtenerIdUsuario().then((idUsuario) =>
+        {print(idUsuario), obtenerHistoriasClinicasPaciente(idUsuario)});
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
-    obtenerHistoriasClinicasPaciente(idPaciente);
   }
 
+  AuthController authController = AuthController();
   final nombreDocumento = "Historia Clinica";
   final urlImagenBanner = "assets/gestion-historias-clinicas.png";
   TextEditingController diagnosticoPresuntivo = TextEditingController();
@@ -53,7 +56,13 @@ class _MisHistoriasClinicasViewState extends State<MisHistoriasClinicasView> {
           nombreDocumento,
           urlImagenBanner,
           diagnosticoPresuntivo,
-          () => {}),
+          () => {}, (idDocumento) {
+        Navigator.push(
+            context,
+            FadeRoute(
+                page: DetalleHistoriaClinicaView(
+                    idHistoriaClinica: idDocumento)));
+      }),
     );
   }
 }
