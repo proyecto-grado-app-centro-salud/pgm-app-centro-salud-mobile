@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:proyecto_grado_flutter/pages/gestion_fichas_medicas.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
+import 'package:proyecto_grado_flutter/controladores/OpcionesMenuController.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
-import 'package:proyecto_grado_flutter/util/transiciones.dart';
+import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 import '../widgets/new-drawer.dart';
 
@@ -14,6 +15,14 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
+  List<String> roles = [];
+  List opcionesMenu = [];
+  @override
+  void initState() {
+    obtenerRolesUsuario();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,39 +30,31 @@ class _MenuState extends State<Menu> {
       appBar: AppBar(
           backgroundColor: Colores.color4,
           title: Text("app consultas medicas")),
-      body: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-          child: Column(children: [
-            Center(
-                child: Container(
-                    padding: EdgeInsets.all(20),
-                    margin: EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    decoration: BoxDecoration(
-                        color: Colores.color4,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextButton(
-                      onPressed: () => {
-                        Navigator.pop(context),
-                        Navigator.push(context,
-                            FadeRoute(page: const GestionFichasMedicas()))
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Gestion de fichas medicas",
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
-                    )))
-          ]),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return opcionMenu(context, opcionesMenu[index]['title'], () {
+              Navigator.pushNamed(context, opcionesMenu[index]['route']);
+            });
+          },
+          itemCount: opcionesMenu.length,
+          scrollDirection: Axis.vertical,
         ),
       ),
     );
+  }
+
+  final _authController = AuthController();
+  OpcionesMenuController opcionesMenuController = OpcionesMenuController();
+  Future<void> obtenerRolesUsuario() async {
+    List<String> rolesObtenidos = await _authController.obtenerRolesUsuario();
+    List opcionesMenuObtenidos =
+        opcionesMenuController.obtenerOpcionesMenuPorRol(rolesObtenidos);
+    setState(() {
+      roles = rolesObtenidos;
+      opcionesMenu = opcionesMenuObtenidos;
+    });
   }
 }

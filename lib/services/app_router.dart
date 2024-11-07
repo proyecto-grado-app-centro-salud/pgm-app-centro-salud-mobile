@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado_flutter/pages/actualizar-historia-clinica.dart';
+import 'package:proyecto_grado_flutter/pages/gestion-consultas-medicas-medicos.dart';
+import 'package:proyecto_grado_flutter/pages/gestion-notas-evolucion.dart';
+import 'package:proyecto_grado_flutter/pages/gestion_fichas_medicas.dart';
+import 'package:proyecto_grado_flutter/pages/gestion_historias_clinicas.dart';
+import 'package:proyecto_grado_flutter/pages/mis-historias-clinicas.dart';
+import 'package:proyecto_grado_flutter/pages/mis-notas-evolucion.dart';
+import 'package:proyecto_grado_flutter/pages/my_profile.dart';
 import 'package:proyecto_grado_flutter/pages/registrar-examen-complementario.dart';
 import 'package:proyecto_grado_flutter/pages/registrar-historia-clinica.dart';
 import 'package:proyecto_grado_flutter/pages/registrar-nota-evolucion.dart';
@@ -12,6 +20,7 @@ import 'package:proyecto_grado_flutter/pages/unl_detalle_medico_especialista.dar
 class AppRouter {
   Route? onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
+      // USUARIO NO AUTENTICADO
       case (UnlDetalleEspecialidad.id):
         final idEspecialidad = routeSettings.arguments as int;
         return MaterialPageRoute(
@@ -21,6 +30,7 @@ class AppRouter {
         final idMedico = routeSettings.arguments as int;
         return MaterialPageRoute(
             builder: (_) => UnlDetalleMedicoEspecialista(idMedico: idMedico));
+      // USUARIO MEDICO
       case (RegistrarHistoriaClinica.id):
         return MaterialPageRoute(
             builder: (_) => const RegistrarHistoriaClinica());
@@ -41,6 +51,31 @@ class AppRouter {
       case (RegistrarSolicitudInterconsulta.id):
         return MaterialPageRoute(
             builder: (_) => const RegistrarSolicitudInterconsulta());
+      case (ActualizarHistoriaClinica.id):
+        final idHistoriaClinica = routeSettings.arguments as int;
+        return MaterialPageRoute(
+            builder: (_) => ActualizarHistoriaClinica(
+                idHistoriaClinica: idHistoriaClinica));
+      case (GestionHistoriasClinicasView.id):
+        return MaterialPageRoute(
+            builder: (_) => const GestionHistoriasClinicasView());
+      case (GestionNotasEvolucionView.id):
+        return MaterialPageRoute(
+            builder: (_) => const GestionNotasEvolucionView());
+      case (GestionConsultasMedicasMedicosView.id):
+        return MaterialPageRoute(
+            builder: (_) => const GestionConsultasMedicasMedicosView());
+      // USUARIO PACIENTE
+      case (MyProfile.id):
+        return MaterialPageRoute(builder: (_) => const MyProfile());
+      case (GestionFichasMedicas.id):
+        return MaterialPageRoute(builder: (_) => const GestionFichasMedicas());
+      case (MisHistoriasClinicasView.id):
+        return MaterialPageRoute(
+            builder: (_) => const MisHistoriasClinicasView());
+      case (MisNotasEvolucionView.id):
+        return MaterialPageRoute(builder: (_) => const MisNotasEvolucionView());
+
       default:
         return null;
     }
