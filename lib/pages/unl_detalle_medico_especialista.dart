@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/MedicosController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/MedicosPublicController.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
@@ -8,7 +9,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 class UnlDetalleMedicoEspecialista extends StatefulWidget {
   const UnlDetalleMedicoEspecialista({super.key, required this.idMedico});
   static const id = "unl_detalle_medico_especialista";
-  final int idMedico;
+  final String idMedico;
   @override
   State<UnlDetalleMedicoEspecialista> createState() =>
       _UnlDetalleMedicoEspecialistaState(idMedico: idMedico);
@@ -16,9 +17,10 @@ class UnlDetalleMedicoEspecialista extends StatefulWidget {
 
 class _UnlDetalleMedicoEspecialistaState
     extends State<UnlDetalleMedicoEspecialista> {
-  final int idMedico;
+  final String idMedico;
   _UnlDetalleMedicoEspecialistaState({required this.idMedico});
-  final MedicosController medicosController = MedicosController();
+  final MedicosPublicController medicosPublicController =
+      MedicosPublicController();
   MedicoEspecialista? medicoEspecialista;
   @override
   void initState() {
@@ -105,10 +107,11 @@ class _UnlDetalleMedicoEspecialistaState
   }
 
   String _errorMessage = "";
-  Future<void> obtenerMedico(int idMedico) async {
+  Future<void> obtenerMedico(String idMedico) async {
     _errorMessage = "";
     try {
-      final medicoResponse = await medicosController.obtenerMedico(idMedico);
+      final medicoResponse =
+          await medicosPublicController.obtenerMedico(idMedico);
       print("Medico obtenido");
       print(medicoResponse);
       setState(() {

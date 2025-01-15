@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:proyecto_grado_flutter/controladores/MedicosController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/MedicosPublicController.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
 import 'package:proyecto_grado_flutter/pages/unl_detalle_medico_especialista.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
@@ -19,7 +20,8 @@ class UnlEquipoMedico extends StatefulWidget {
 
 class _UnlEquipoMedicoState extends State<UnlEquipoMedico> {
   List<MedicoEspecialista> equipoMedico = [];
-  final MedicosController medicosController = MedicosController();
+  final MedicosPublicController medicosPublicController =
+      MedicosPublicController();
   void initState() {
     super.initState();
     obtenerEquipoMedico();
@@ -68,7 +70,7 @@ class _UnlEquipoMedicoState extends State<UnlEquipoMedico> {
   Future<void> obtenerEquipoMedico() async {
     try {
       final equipoMedicoResponse =
-          await medicosController.obtenerEquipoMedico();
+          await medicosPublicController.obtenerEquipoMedico();
       setState(() {
         equipoMedico = equipoMedicoResponse;
       });

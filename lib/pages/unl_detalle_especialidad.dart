@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:proyecto_grado_flutter/controladores/EspecialidadesController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/EspecialidadesPublicController.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_principal_text_title.dart';
-import 'package:proyecto_grado_flutter/widgets/custom_text_litle.dart';
 import 'package:proyecto_grado_flutter/widgets/image_container.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
@@ -21,15 +20,17 @@ class UnlDetalleEspecialidad extends StatefulWidget {
 
 class _UnlDetalleEspecialidadState extends State<UnlDetalleEspecialidad> {
   final int idEspecialidad;
-  final EspecialidadesController especialidadesController =
-      EspecialidadesController();
+  final EspecialidadesPublicController especialidadesPublicController =
+      EspecialidadesPublicController();
   Especialidad? especialidad;
   String _errorMessage = "";
   _UnlDetalleEspecialidadState({required this.idEspecialidad});
   @override
   void initState() {
-    super.initState();
+    print("Detalle especialidad");
+    print(idEspecialidad);
     obtenerEspecialidad();
+    super.initState();
   }
 
   @override
@@ -70,8 +71,9 @@ class _UnlDetalleEspecialidadState extends State<UnlDetalleEspecialidad> {
   Future<void> obtenerEspecialidad() async {
     _errorMessage = "";
     try {
-      final especialidadResponse =
-          await especialidadesController.obtenerEspecialidad(idEspecialidad);
+      final especialidadResponse = await especialidadesPublicController
+          .obtenerEspecialidad(idEspecialidad);
+      print(especialidadResponse);
       setState(() {
         especialidad = especialidadResponse;
       });

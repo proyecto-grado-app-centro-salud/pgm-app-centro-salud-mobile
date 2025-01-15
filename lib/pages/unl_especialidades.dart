@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:proyecto_grado_flutter/controladores/EspecialidadesController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/EspecialidadesPublicController.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 import 'package:proyecto_grado_flutter/pages/unl_detalle_especialidad.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
@@ -11,15 +12,15 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
 class UnlEspecialidades extends StatefulWidget {
   const UnlEspecialidades({super.key});
-
+  static const id = "unl-especialidades";
   @override
   State<UnlEspecialidades> createState() => _UnlEspecialidadesState();
 }
 
 class _UnlEspecialidadesState extends State<UnlEspecialidades> {
   List<Especialidad> especialidades = [];
-  final EspecialidadesController especialidadesController =
-      EspecialidadesController();
+  final EspecialidadesPublicController especialidadesPublicController =
+      EspecialidadesPublicController();
   String _errorMessage = "";
   void initState() {
     super.initState();
@@ -67,7 +68,7 @@ class _UnlEspecialidadesState extends State<UnlEspecialidades> {
     _errorMessage = "";
     try {
       final especialidadesResponse =
-          await especialidadesController.obtenerEspecialidades();
+          await especialidadesPublicController.obtenerEspecialidades();
       setState(() {
         especialidades = especialidadesResponse;
       });

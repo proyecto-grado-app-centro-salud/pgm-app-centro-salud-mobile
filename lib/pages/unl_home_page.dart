@@ -4,8 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:proyecto_grado_flutter/controladores/AuthController.dart';
 import 'package:proyecto_grado_flutter/controladores/EspecialidadesController.dart';
 import 'package:proyecto_grado_flutter/controladores/MedicosController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/EspecialidadesPublicController.dart';
+import 'package:proyecto_grado_flutter/controladores/public/MedicosPublicController.dart';
+import 'package:proyecto_grado_flutter/pages/unl_detalle_especialidad.dart';
+import 'package:proyecto_grado_flutter/pages/unl_detalle_medico_especialista.dart';
+import 'package:proyecto_grado_flutter/pages/unl_equipo_medico.dart';
+import 'package:proyecto_grado_flutter/pages/unl_especialidades.dart';
 import 'package:proyecto_grado_flutter/util/locales.dart';
 import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/widgets/custom_text_litle.dart';
@@ -24,9 +31,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<HomePage> {
-  final EspecialidadesController especialidadesController =
-      EspecialidadesController();
-  final MedicosController medicosController = MedicosController();
+  final EspecialidadesPublicController especialidadesPublicController =
+      EspecialidadesPublicController();
+  final MedicosPublicController medicosPublicController =
+      MedicosPublicController();
   List<Especialidad> especialidades = [];
   String _errorMessage = "";
   List equipoMedico = [];
@@ -38,6 +46,7 @@ class _MyHomePageState extends State<HomePage> {
     super.initState();
     obtenerEspecialidades();
     obtenerEquipoMedico();
+    obtenerCiPaciente();
   }
 
   @override
@@ -95,20 +104,8 @@ class _MyHomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        image: DecorationImage(
-                            image: AssetImage("assets/banner-home.jpg"),
-                            fit: BoxFit.cover)),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
                   Column(
-                    children: [Text("Jose Gutierrez")],
+                    children: [Text(ci)],
                   )
                 ],
               ),
@@ -121,7 +118,9 @@ class _MyHomePageState extends State<HomePage> {
                             '${LocaleData.especialidades.getString(context)}'),
                     const Spacer(),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, UnlEspecialidades.id);
+                      },
                       child: Text(
                         LocaleData.verTodo.getString(context),
                         style: const TextStyle(
@@ -145,7 +144,11 @@ class _MyHomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final especialidad = especialidades[index];
                         print(especialidad);
-                        return cardEspecialidad(context, especialidad);
+                        return cardEspecialidad(context, especialidad, () {
+                          Navigator.pushNamed(
+                              context, UnlDetalleEspecialidad.id,
+                              arguments: especialidades[index].idEspecialidad);
+                        });
                       },
                     ),
                   )),
@@ -157,7 +160,9 @@ class _MyHomePageState extends State<HomePage> {
                         label: '${LocaleData.equipoMedico.getString(context)}'),
                     const Spacer(),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, UnlEquipoMedico.id);
+                      },
                       child: Text(
                         LocaleData.verTodo.getString(context),
                         style: const TextStyle(
@@ -181,74 +186,82 @@ class _MyHomePageState extends State<HomePage> {
                       itemCount: equipoMedico.length,
                       itemBuilder: (context, index) {
                         final medico = equipoMedico[index];
-                        return cardMedico(context, medico);
+                        return cardMedico(context, medico, () {
+                          Navigator.pushNamed(
+                              context, UnlDetalleMedicoEspecialista.id,
+                              arguments: equipoMedico[index].idUsuario);
+                        });
                       },
                     ),
                   )),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 10),
-                child: Row(
-                  children: [
-                    CustomTextTitle(
-                        label:
-                            '${LocaleData.informacionProcesoObtencionFichaMedicaPresencial.getString(context)}'),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        LocaleData.verTodo.getString(context),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colores.color4,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                  ),
-                  child: SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: procesoPeticionFichaPresencial.length,
-                      itemBuilder: (context, index) {
-                        final newData = equipoMedico[index];
-                        return Container(
-                          width: 220,
-                          margin: const EdgeInsets.only(right: 10),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ImageContainer(
-                                  width: 220,
-                                  imageUrl:
-                                      '$_endPoint/storage/default_image.png',
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  newData.nombre,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          height: 1.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ))
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 20, right: 10),
+              //   child: Row(
+              //     children: [
+              //       CustomTextTitle(
+              //           label:
+              //               'Comunicados'),
+              //       const Spacer(),
+              //       TextButton(
+              //         onPressed: () {},
+              //         child: Text(
+              //           LocaleData.verTodo.getString(context),
+              //           style: const TextStyle(
+              //             fontSize: 12,
+              //             color: Colores.color4,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // Padding(
+              //     padding: const EdgeInsets.only(
+              //       left: 20,
+              //     ),
+              //     child: SizedBox(
+              //       height: 200,
+              //       child: ListView.builder(
+              //         scrollDirection: Axis.horizontal,
+              //         itemCount: procesoPeticionFichaPresencial.length,
+              //         itemBuilder: (context, index) {
+              //           final newData = equipoMedico[index];
+              //           return Container(
+              //             width: 220,
+              //             margin: const EdgeInsets.only(right: 10),
+              //             child: InkWell(
+              //               onTap: () {
+              //                 Navigator.pushNamed(
+              //                     context, UnlDetalleMedicoEspecialista.id,
+              //                     arguments: index);
+              //               },
+              //               child: Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.start,
+              //                 children: [
+              //                   ImageContainer(
+              //                     width: 220,
+              //                     imageUrl:
+              //                         '$_endPoint/storage/default_image.png',
+              //                   ),
+              //                   const SizedBox(height: 10),
+              //                   Text(
+              //                     newData.nombre,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     maxLines: 1,
+              //                     style: Theme.of(context)
+              //                         .textTheme
+              //                         .bodyLarge!
+              //                         .copyWith(
+              //                             fontWeight: FontWeight.bold,
+              //                             height: 1.5),
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       ),
+              //     ))
             ],
           ),
         ),
@@ -259,7 +272,8 @@ class _MyHomePageState extends State<HomePage> {
   Future<void> obtenerEquipoMedico() async {
     _errorMessage = "";
     try {
-      final medicosResponse = await medicosController.obtenerEquipoMedico();
+      final medicosResponse =
+          await medicosPublicController.obtenerEquipoMedico();
       setState(() {
         equipoMedico = medicosResponse;
       });
@@ -272,12 +286,22 @@ class _MyHomePageState extends State<HomePage> {
     _errorMessage = "";
     try {
       final especialidadesResponse =
-          await especialidadesController.obtenerEspecialidades();
+          await especialidadesPublicController.obtenerEspecialidades();
       setState(() {
         especialidades = especialidadesResponse;
       });
     } catch (e) {
       _errorMessage = 'Error al obtener especialidades';
+    }
+  }
+
+  String ci = "";
+  final authController = new AuthController();
+  Future<void> obtenerCiPaciente() async {
+    try {
+      ci = (await authController.obtenerIdUsuario()) as String;
+    } catch (e) {
+      print(e);
     }
   }
 }
