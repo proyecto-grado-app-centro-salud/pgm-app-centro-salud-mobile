@@ -4,20 +4,26 @@ import 'package:proyecto_grado_flutter/controladores/PacientesController.dart';
 import 'package:proyecto_grado_flutter/controladores/PapeletasInternacionController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
+import 'package:proyecto_grado_flutter/modelos/PapeletaInternacion.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
-class RegistrarPapeletaInternacion extends StatefulWidget {
-  const RegistrarPapeletaInternacion({super.key});
-  static const id = "registrar_papeleta_internacion";
+class ActualizarPapeletaInternacion extends StatefulWidget {
+  const ActualizarPapeletaInternacion(
+      {super.key, required this.idPapeletaInternacion});
+
+  static const id = "actualizar-papeleta-internacion";
+  final int idPapeletaInternacion;
+
   @override
-  State<RegistrarPapeletaInternacion> createState() =>
-      _RegistrarPapeletaInternacionState();
+  State<ActualizarPapeletaInternacion> createState() =>
+      _ActualizarPapeletaInternacionState(
+          idPapeletaInternacion: idPapeletaInternacion);
 }
 
-class _RegistrarPapeletaInternacionState
-    extends State<RegistrarPapeletaInternacion> {
+class _ActualizarPapeletaInternacionState
+    extends State<ActualizarPapeletaInternacion> {
   final Map<String, TextEditingController> controllers = {
     'idPaciente': TextEditingController(),
     'ciPaciente': TextEditingController(),
@@ -26,8 +32,15 @@ class _RegistrarPapeletaInternacionState
     'fechaIngreso': TextEditingController(),
     'diagnostico': TextEditingController()
   };
+  PapeletaInternacion? papeletaInternacion;
+  final _papeletasInternacionController = PapeletasInternacionController();
+
   List<Paciente> pacientes = [];
   List<HistoriaClinica> historiasClinicas = [];
+  final _historiasClinicasController = HistoriasClinicasController();
+  final _pacientesController = PacientesController();
+  final PageController _pageController = PageController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _onSelectItemPaciente(Paciente item) {
     setState(() {
       controllers['ciPaciente']!.text = item.ci.toString();
@@ -43,24 +56,17 @@ class _RegistrarPapeletaInternacionState
     });
   }
 
-  void _onSelectFechaIngreso(String date) {
-    setState(() {
-      controllers['fechaIngreso']!.text = date;
-    });
-  }
-
-  PapeletasInternacionController papeletasInternacionController =
-      PapeletasInternacionController();
-  HistoriasClinicasController historiasClinicasController =
-      HistoriasClinicasController();
-  PacientesController pacientesController = PacientesController();
-  final formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    obtenerPacientes();
     super.initState();
+    obtenerPapeletaInternacion(widget.idPapeletaInternacion);
+    obtenerPacientes();
   }
 
+  final int idPapeletaInternacion;
+  _ActualizarPapeletaInternacionState({required this.idPapeletaInternacion});
+
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +85,7 @@ class _RegistrarPapeletaInternacionState
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Registro papeleta de internacion',
+                  'Actualizacion papeleta de internacion',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -121,9 +127,11 @@ class _RegistrarPapeletaInternacionState
                     controllers['fechaIngreso']!, "", _onSelectFechaIngreso),
                 botonFormularioDocumento("Registrar", () {
                   if (formKey.currentState?.validate() ?? false) {
-                    registrarPapeletaInternacion(context, controllers);
+                    actualizarPapeletaInternacion(context, controllers);
                   }
                 }),
+                botonPrimario(context, "Obtener pdf",
+                    () => {obtenerPDFPapeletaInternacion()})
               ],
             ),
           ),
@@ -132,12 +140,43 @@ class _RegistrarPapeletaInternacionState
     );
   }
 
+  void _onSelectFechaIngreso(String date) {
+    setState(() {
+      controllers['fechaIngreso']!.text = date;
+    });
+  }
+
+  Future<void> actualizarPapeletaInternacion(BuildContext context,
+      Map<String, TextEditingController> controllers) async {
+    try {
+      await _papeletasInternacionController.actualizarPapeletaInternacion(
+          controllers, idPapeletaInternacion);
+      mostrarMensajeExito(context,
+          titulo: "Actualizacion papeleta de internacion exitoso");
+    } catch (e) {
+      mostrarMensajeError(context);
+    }
+  }
+
+  void obtenerPapeletaInternacion(int idPapeletaInternacion) async {
+    try {
+      final papeletaInternacionResponse = await _papeletasInternacionController
+          .obtenerPapeletaInternacion(idPapeletaInternacion);
+      setState(() {
+        papeletaInternacion = papeletaInternacionResponse;
+        establecerValoresEnControllersPapeletaInternacion(papeletaInternacion);
+      });
+    } catch (e) {
+      print('Error al obtener la papeleta de internación: $e');
+    }
+  }
+
   void obtenerPacientes() async {
     try {
-      List<Paciente> pacientesRecibidos =
-          await pacientesController.obtenerPacientes();
+      List<Paciente> pacientesObtenidos =
+          await _pacientesController.obtenerPacientes();
       setState(() {
-        pacientes = pacientesRecibidos;
+        pacientes = pacientesObtenidos;
       });
     } catch (e) {
       print('Error al cargar pacientes: $e');
@@ -146,8 +185,8 @@ class _RegistrarPapeletaInternacionState
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      final historiasClinicaPaginadas = await historiasClinicasController
-          .obtenerHistoriasClinicasDePaciente(idPaciente.toString());
+      final historiasClinicaPaginadas = await _historiasClinicasController
+          .obtenerHistoriasClinicasDePaciente(idPaciente);
       setState(() {
         historiasClinicas = historiasClinicaPaginadas['content'];
       });
@@ -156,16 +195,40 @@ class _RegistrarPapeletaInternacionState
     }
   }
 
-  Future<void> registrarPapeletaInternacion(BuildContext context,
-      Map<String, TextEditingController> controllers) async {
+  void establecerValoresEnControllersPapeletaInternacion(
+      PapeletaInternacion? papeletaInternacion) {
+    if (papeletaInternacion != null) {
+      setState(() {
+        controllers['idPaciente']?.text =
+            papeletaInternacion.idPaciente.toString();
+        controllers['ciPaciente']?.text =
+            papeletaInternacion.ciPropietario ?? '';
+        controllers['idHistoriaClinica']?.text =
+            papeletaInternacion.idHistoriaClinica.toString();
+        controllers['diagnosticoPresuntivo']?.text =
+            papeletaInternacion.diagnosticoPresuntivo ?? '';
+        controllers['fechaIngreso']?.text =
+            papeletaInternacion.fechaIngreso?.toString() ?? '';
+        controllers['diagnostico']?.text =
+            papeletaInternacion.diagnostico ?? '';
+      });
+    }
+  }
+
+  obtenerPDFPapeletaInternacion() {
     try {
-      await papeletasInternacionController
-          .registrarPapeletaInternacion(controllers);
-      mostrarMensajeExito(context,
-          titulo: "Registro papeleta de internacion exitoso");
+      Map<String, String> stringMap = {
+        "id": papeletaInternacion!.id.toString(),
+        "idPaciente": papeletaInternacion!.idPaciente.toString(),
+        "ciPaciente": papeletaInternacion!.ciPropietario.toString(),
+        "idHistoriaClinica": papeletaInternacion!.idHistoriaClinica.toString(),
+        "diagnosticoPresuntivo":
+            papeletaInternacion!.diagnosticoPresuntivo.toString(),
+        "diagnostico": papeletaInternacion!.diagnostico.toString()
+      };
+      _papeletasInternacionController.obtenerPDFPapeletaInternacion(stringMap);
     } catch (e) {
       print(e);
-      mostrarMensajeError(context);
     }
   }
 }

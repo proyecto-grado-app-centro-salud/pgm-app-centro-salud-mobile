@@ -3,20 +3,24 @@ import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController
 import 'package:proyecto_grado_flutter/controladores/NotasReferenciaController.dart';
 import 'package:proyecto_grado_flutter/controladores/PacientesController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
+import 'package:proyecto_grado_flutter/modelos/NotaReferencia.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
-class RegistrarNotaReferencia extends StatefulWidget {
-  const RegistrarNotaReferencia({super.key});
-  static const id = "registrar_nota_referencia";
+class ActualizarNotaReferencia extends StatefulWidget {
+  const ActualizarNotaReferencia({super.key, required this.idNotaReferencia});
+  static const id = "actualizar-nota-referencia";
+  final int idNotaReferencia;
   @override
-  State<RegistrarNotaReferencia> createState() =>
-      _RegistrarNotaReferenciaState();
+  State<ActualizarNotaReferencia> createState() =>
+      _ActualizarNotaReferenciaState(idNotaReferencia: idNotaReferencia);
 }
 
-class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
+class _ActualizarNotaReferenciaState extends State<ActualizarNotaReferencia> {
+  int idNotaReferencia;
+  _ActualizarNotaReferenciaState({required this.idNotaReferencia});
   final Map<String, TextEditingController> controllers = {
     'idPaciente': TextEditingController(),
     'ciPaciente': TextEditingController(),
@@ -35,9 +39,15 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
     'monitoreo': TextEditingController(),
     'informeTrabajoSocial': TextEditingController(),
   };
+  NotaReferencia? notaReferencia;
+  final _notasReferenciaController = NotasReferenciaController();
 
   List<Paciente> pacientes = [];
   List<HistoriaClinica> historiasClinicas = [];
+  final _historiasClinicasController = HistoriasClinicasController();
+  final _pacientesController = PacientesController();
+  final PageController _pageController = PageController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _onSelectItemPaciente(Paciente item) {
     setState(() {
       controllers['ciPaciente']!.text = item.ci.toString();
@@ -53,20 +63,15 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
     });
   }
 
-  void _onSelectFechaVencimiento(String date) {
-    setState(() {
-      controllers['fechaVencimiento']!.text = date;
-    });
-  }
-
   @override
   void initState() {
-    obtenerPacientes();
     super.initState();
+    obtenerNotaReferencia(widget.idNotaReferencia);
+    obtenerPacientes();
   }
 
-  final PageController _pageController = PageController();
   final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +103,7 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'Registro nota de referencia',
+              'Actualizacion de nota de referencia',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Color.fromRGBO(0, 0, 0, 1),
@@ -113,7 +118,7 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
             etiquetaInputDocumento('Paciente'),
             SizedBox(height: 5),
             inputListSuggestionsPacientes(context, pacientes,
-                controllers["idPaciente"], _onSelectItemPaciente),
+                controllers["ciPaciente"], _onSelectItemPaciente),
             (controllers['idPaciente']!.text != '')
                 ? botonFormularioDocumento("Buscar historias clinicas", () {
                     obtenerHistoriasClinicasDePaciente(
@@ -150,7 +155,7 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeIn,
               );
-            }),
+            })
           ],
         ),
       ),
@@ -197,40 +202,31 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
                   curve: Curves.easeIn,
                 );
               }),
-              botonFormularioDocumento("Registrar", () {
+              botonFormularioDocumento("Actualizar", () {
                 final formState1 = formKey.currentState;
                 if (formState1 != null && formState1.validate()) {
-                  registrarNotaReferencia(context, controllers);
+                  actualizarNotaReferencia(context, controllers);
                 }
               }),
-            ])
+            ]),
+            botonPrimario(
+                context, "Obtener pdf", () => {obtenerPDFNotaReferencia()})
           ],
         ),
       ),
     );
   }
 
-  HistoriasClinicasController historiasClinicasController =
-      HistoriasClinicasController();
-  PacientesController pacientesController = PacientesController();
-  NotasReferenciaController notasReferenciaController =
-      NotasReferenciaController();
-  void obtenerPacientes() async {
-    try {
-      List<Paciente> pacientesRecibidos =
-          await pacientesController.obtenerPacientes();
-      setState(() {
-        pacientes = pacientesRecibidos;
-      });
-    } catch (e) {
-      print('Error al cargar pacientes: $e');
-    }
+  void _onSelectFechaVencimiento(String date) {
+    setState(() {
+      controllers['fechaVencimiento']!.text = date;
+    });
   }
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      final historiasClinicaPaginadas = await historiasClinicasController
-          .obtenerHistoriasClinicasDePaciente(idPaciente.toString());
+      final historiasClinicaPaginadas = await _historiasClinicasController
+          .obtenerHistoriasClinicasDePaciente(idPaciente);
       setState(() {
         historiasClinicas = historiasClinicaPaginadas['content'];
       });
@@ -239,14 +235,105 @@ class _RegistrarNotaReferenciaState extends State<RegistrarNotaReferencia> {
     }
   }
 
-  Future<void> registrarNotaReferencia(BuildContext context,
+  Future<void> actualizarNotaReferencia(BuildContext context,
       Map<String, TextEditingController> controllers) async {
     try {
-      await notasReferenciaController.registrarNotaReferencia(controllers);
+      await _notasReferenciaController.actualizarNotaReferencia(
+          controllers, idNotaReferencia);
       mostrarMensajeExito(context,
-          titulo: "Registro nota de referencia exitoso");
+          titulo: "Actualizacion nota referencia exitoso");
     } catch (e) {
       mostrarMensajeError(context);
+    }
+  }
+
+  Future<void> obtenerNotaReferencia(int idNotaReferencia) async {
+    try {
+      final notaReferenciaResponse = await _notasReferenciaController
+          .obtenerNotaReferencia(idNotaReferencia);
+      setState(() {
+        notaReferencia = notaReferenciaResponse;
+        establecerValoresEnControllersNotaReferencia(notaReferencia);
+      });
+    } catch (e) {
+      print('Error al obtener la nota de referencia: $e');
+    }
+  }
+
+  void obtenerPacientes() async {
+    try {
+      List<Paciente> pacientesObtenidos =
+          await _pacientesController.obtenerPacientes();
+      setState(() {
+        pacientes = pacientesObtenidos;
+      });
+    } catch (e) {
+      print('Error al cargar pacientes: $e');
+    }
+  }
+
+  void establecerValoresEnControllersNotaReferencia(
+      NotaReferencia? notaReferencia) {
+    if (notaReferencia != null) {
+      setState(() {
+        controllers['idPaciente']?.text = notaReferencia.idPaciente.toString();
+        controllers['ciPaciente']?.text = notaReferencia.ciPropietario ?? '';
+        controllers['idHistoriaClinica']?.text =
+            notaReferencia.idHistoriaClinica.toString();
+        controllers['diagnosticoPresuntivo']?.text =
+            notaReferencia.diagnosticoPresuntivo ?? '';
+        controllers['datosClinicos']?.text = notaReferencia.datosClinicos ?? '';
+        controllers['datosIngreso']?.text = notaReferencia.datosIngreso ?? '';
+        controllers['datosEgreso']?.text = notaReferencia.datosEgreso ?? '';
+        controllers['condicionesPacienteMomentoTransferencia']?.text =
+            notaReferencia.condicionesPacienteMomentoTransferencia ?? '';
+        controllers['informeProcedimientosRealizados']?.text =
+            notaReferencia.informeProcedimientosRealizados ?? '';
+        controllers['tratamientoEfectuado']?.text =
+            notaReferencia.tratamientoEfectuado ?? '';
+        controllers['tratamientoPersistePaciente']?.text =
+            notaReferencia.tratamientoPersistePaciente ?? '';
+        controllers['fechaVencimiento']?.text =
+            notaReferencia.fechaVencimiento.toString();
+        controllers['advertenciasFactoresRiesgo']?.text =
+            notaReferencia.advertenciasFactoresRiesgo ?? '';
+        controllers['comentarioAdicional']?.text =
+            notaReferencia.comentarioAdicional ?? '';
+        controllers['monitoreo']?.text = notaReferencia.monitoreo ?? '';
+        controllers['informeTrabajoSocial']?.text =
+            notaReferencia.informeTrabajoSocial ?? '';
+      });
+    }
+  }
+
+  obtenerPDFNotaReferencia() {
+    try {
+      Map<String, String> stringMap = {
+        "id": notaReferencia!.id.toString(),
+        "idPaciente": notaReferencia!.idPaciente.toString(),
+        "ciPaciente": notaReferencia!.ciPropietario.toString(),
+        "idHistoriaClinica": notaReferencia!.idHistoriaClinica.toString(),
+        "diagnosticoPresuntivo":
+            notaReferencia!.diagnosticoPresuntivo.toString(),
+        "datosClinicos": notaReferencia!.datosClinicos.toString(),
+        "datosIngreso": notaReferencia!.datosIngreso.toString(),
+        "datosEgreso": notaReferencia!.datosEgreso.toString(),
+        "condicionesPacienteMomentoTransferencia":
+            notaReferencia!.condicionesPacienteMomentoTransferencia.toString(),
+        "informeProcedimientosRealizados":
+            notaReferencia!.informeProcedimientosRealizados.toString(),
+        "tratamientoEfectuado": notaReferencia!.tratamientoEfectuado.toString(),
+        "tratamientoPersistePaciente":
+            notaReferencia!.tratamientoPersistePaciente.toString(),
+        "advertenciasFactoresRiesgo":
+            notaReferencia!.advertenciasFactoresRiesgo.toString(),
+        "comentarioAdicional": notaReferencia!.comentarioAdicional.toString(),
+        "monitoreo": notaReferencia!.monitoreo.toString(),
+        "informeTrabajoSocial": notaReferencia!.informeTrabajoSocial.toString()
+      };
+      _notasReferenciaController.obtenerPDFNotaReferencia(stringMap);
+    } catch (e) {
+      print(e);
     }
   }
 }

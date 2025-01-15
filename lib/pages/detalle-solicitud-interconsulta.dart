@@ -9,6 +9,7 @@ class DetalleSolicitudInterconsultaView extends StatefulWidget {
   const DetalleSolicitudInterconsultaView(
       {super.key, required this.idSolicitudInterconsulta});
   final int idSolicitudInterconsulta;
+  static const id = "detalle-solicitud-interconsulta";
   @override
   State<DetalleSolicitudInterconsultaView> createState() =>
       _DetalleSolicitudInterconsultaViewState(

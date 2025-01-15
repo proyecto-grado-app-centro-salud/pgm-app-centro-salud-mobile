@@ -8,6 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 class DetalleHistoriaClinicaView extends StatefulWidget {
   const DetalleHistoriaClinicaView(
       {super.key, required this.idHistoriaClinica});
+  static const id = "detalle-historia-clinica";
   final int idHistoriaClinica;
   @override
   State<DetalleHistoriaClinicaView> createState() =>
@@ -93,12 +94,12 @@ class _DetalleHistoriaClinicaViewState
                     context, controllers['antecedentesFamiliares']!, '',
                     readOnly: true),
                 SizedBox(height: 5),
-                etiquetaInputDocumento('Antecedentes ginecoobstericos'),
-                SizedBox(height: 5),
-                inputFormatoBorderBlack(
-                    context, controllers['antecedentesGinecoobstetricos']!, '',
-                    readOnly: true),
-                SizedBox(height: 5),
+                // etiquetaInputDocumento('Antecedentes ginecoobstericos'),
+                // SizedBox(height: 5),
+                // inputFormatoBorderBlack(
+                //     context, controllers['antecedentesGinecoobstetricos']!, '',
+                //     readOnly: true),
+                // SizedBox(height: 5),
                 etiquetaInputDocumento('Antecedentes no patológicos'),
                 SizedBox(height: 5),
                 inputFormatoBorderBlack(

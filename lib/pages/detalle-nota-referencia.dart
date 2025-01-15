@@ -8,6 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 class DetalleNotaReferenciaView extends StatefulWidget {
   const DetalleNotaReferenciaView({super.key, required this.idNotaReferencia});
   final int idNotaReferencia;
+  static const id = "detalle-nota-referencia";
   @override
   State<DetalleNotaReferenciaView> createState() =>
       _DetalleNotaReferenciaViewState(idNotaReferencia: idNotaReferencia);

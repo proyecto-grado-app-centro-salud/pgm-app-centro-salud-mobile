@@ -4,20 +4,27 @@ import 'package:proyecto_grado_flutter/controladores/PacientesController.dart';
 import 'package:proyecto_grado_flutter/controladores/RecetasController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
+import 'package:proyecto_grado_flutter/modelos/Receta.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
-class RegistrarReceta extends StatefulWidget {
-  const RegistrarReceta({super.key});
-  static const id = "registrar_receta";
+class ActualizarRecetaView extends StatefulWidget {
+  const ActualizarRecetaView({super.key, required this.idReceta});
+
+  static const id = "actualizar-receta";
+  final int idReceta;
+
   @override
-  State<RegistrarReceta> createState() => _RegistrarRecetaState();
+  State<ActualizarRecetaView> createState() =>
+      _ActualizarRecetaViewState(idReceta: idReceta);
 }
 
-class _RegistrarRecetaState extends State<RegistrarReceta> {
+class _ActualizarRecetaViewState extends State<ActualizarRecetaView> {
+  final int idReceta;
+  _ActualizarRecetaViewState({required this.idReceta});
   final Map<String, TextEditingController> controllers = {
-    'nombreGenericoMedicamentoPrescrito': TextEditingController(),
+    'nombreGenericoMedicamentoPreescrito': TextEditingController(),
     'viaCuidadoEspecialesAdministracion': TextEditingController(),
     'concentracionDosificacion': TextEditingController(),
     'frecuenciaAdministracion24hrs': TextEditingController(),
@@ -32,8 +39,15 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
     'cantidadRecetada': TextEditingController(),
     'cantidadDispensada': TextEditingController()
   };
+  Receta? receta;
+  final _recetasController = RecetasController();
+
   List<Paciente> pacientes = [];
   List<HistoriaClinica> historiasClinicas = [];
+  final _historiasClinicasController = HistoriasClinicasController();
+  final _pacientesController = PacientesController();
+  final PageController _pageController = PageController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _onSelectItemPaciente(Paciente item) {
     setState(() {
       controllers['ciPaciente']!.text = item.ci.toString();
@@ -49,20 +63,14 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
     });
   }
 
-  void _onSelectFechaVencimiento(String date) {
-    setState(() {
-      controllers['fechaVencimiento']!.text = date;
-    });
-  }
-
   @override
   void initState() {
+    obtenerReceta(idReceta);
     obtenerPacientes();
     super.initState();
   }
 
   final formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +89,7 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Registro de receta',
+                  'Actualizacion receta',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -116,7 +124,7 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
                     'Nombre generico de medicamento prescrito'),
                 SizedBox(height: 5),
                 inputFormFieldFormatoBorderBlack(context,
-                    controllers['nombreGenericoMedicamentoPrescrito']!, ""),
+                    controllers['nombreGenericoMedicamentoPreescrito']!, ""),
                 SizedBox(height: 5),
                 etiquetaInputDocumento(
                     'Via y cuidados especiales de administracion'),
@@ -168,12 +176,14 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
                 inputFormFieldFormatoBorderBlack(
                     context, controllers['cantidadDispensada']!, ""),
                 SizedBox(height: 5),
-                botonFormularioDocumento("Registrar", () {
+                botonFormularioDocumento("Actualizar", () {
                   final formState1 = formKey.currentState;
                   if (formState1 != null && formState1.validate()) {
-                    registrarReceta(context, controllers);
+                    actualizarReceta(context, controllers);
                   }
                 }),
+                botonPrimario(
+                    context, "Obtener pdf", () => {obtenerPDFReceta()})
               ],
             ),
           ),
@@ -182,16 +192,18 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
     );
   }
 
-  HistoriasClinicasController historiasClinicasController =
-      HistoriasClinicasController();
-  PacientesController pacientesController = PacientesController();
-  RecetasController recetasController = RecetasController();
+  void _onSelectFechaVencimiento(String date) {
+    setState(() {
+      controllers['fechaVencimiento']!.text = date;
+    });
+  }
+
   void obtenerPacientes() async {
     try {
-      List<Paciente> pacientesRecibidos =
-          await pacientesController.obtenerPacientes();
+      List<Paciente> pacientesObtenidos =
+          await _pacientesController.obtenerPacientes();
       setState(() {
-        pacientes = pacientesRecibidos;
+        pacientes = pacientesObtenidos;
       });
     } catch (e) {
       print('Error al cargar pacientes: $e');
@@ -200,8 +212,8 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      final historiasClinicaPaginadas = await historiasClinicasController
-          .obtenerHistoriasClinicasDePaciente(idPaciente.toString());
+      final historiasClinicaPaginadas = await _historiasClinicasController
+          .obtenerHistoriasClinicasDePaciente(idPaciente);
       setState(() {
         historiasClinicas = historiasClinicaPaginadas['content'];
       });
@@ -210,14 +222,86 @@ class _RegistrarRecetaState extends State<RegistrarReceta> {
     }
   }
 
-  Future<void> registrarReceta(BuildContext context,
+  Future<void> obtenerReceta(int idReceta) async {
+    try {
+      final recetaResponse = await _recetasController.obtenerReceta(idReceta);
+      setState(() {
+        receta = recetaResponse;
+        establecerValoresEnControllersReceta(receta);
+      });
+    } catch (e) {
+      print('Error al obtener la receta: $e');
+    }
+  }
+
+  Future<void> actualizarReceta(BuildContext context,
       Map<String, TextEditingController> controllers) async {
     try {
-      await recetasController.registrarReceta(controllers);
-      mostrarMensajeExito(context, titulo: "Registro receta exitoso");
+      await _recetasController.actualizarReceta(controllers, idReceta);
+      mostrarMensajeExito(context, titulo: "Actualizacion receta exitoso");
+    } catch (e) {
+      mostrarMensajeError(context);
+    }
+  }
+
+  void establecerValoresEnControllersReceta(Receta? receta) {
+    if (receta != null) {
+      setState(() {
+        controllers['nombreGenericoMedicamentoPreescrito']?.text =
+            receta.nombreGenericoMedicamentoPrescrito ?? '';
+        controllers['viaCuidadoEspecialesAdministracion']?.text =
+            receta.viaCuidadoEspecialesAdministracion ?? '';
+        controllers['concentracionDosificacion']?.text =
+            receta.concentracionDosificacion ?? '';
+        controllers['frecuenciaAdministracion24hrs']?.text =
+            receta.frecuenciaAdministracion24hrs ?? '';
+        controllers['duracionTratamiento']?.text =
+            receta.duracionTratamiento ?? '';
+        controllers['fechaVencimiento']?.text =
+            receta.fechaVencimiento?.toString() ?? '';
+        controllers['precaucionesEspeciales']?.text =
+            receta.precaucionesEspeciales ?? '';
+        controllers['indicacionesEspeciales']?.text =
+            receta.indicacionesEspeciales ?? '';
+        controllers['cantidadDispensada']?.text =
+            receta.cantidadDispensada.toString() ?? '0';
+        controllers['cantidadRecetada']?.text =
+            receta.cantidadRecetada.toString() ?? '0';
+        controllers['idPaciente']?.text = receta.idPaciente.toString();
+        controllers['ciPaciente']?.text = receta.ciPropietario ?? '';
+        controllers['idHistoriaClinica']?.text =
+            receta.idHistoriaClinica.toString();
+        controllers['diagnosticoPresuntivo']?.text =
+            receta.diagnosticoPresuntivo ?? '';
+      });
+    }
+  }
+
+  obtenerPDFReceta() {
+    try {
+      Map<String, String> stringMap = {
+        "id": receta!.id.toString(),
+        "nombreGenericoMedicamentoPreescrito":
+            receta!.nombreGenericoMedicamentoPrescrito.toString(),
+        "viaCuidadoEspecialesAdministracion":
+            receta!.viaCuidadoEspecialesAdministracion.toString(),
+        "concentracionDosificacion":
+            receta!.concentracionDosificacion.toString(),
+        "frecuenciaAdministracion24hrs":
+            receta!.frecuenciaAdministracion24hrs.toString(),
+        "duracionTratamiento": receta!.duracionTratamiento.toString(),
+        "cantidadDispensada": receta!.cantidadDispensada.toString(),
+        "cantidadRecetada": receta!.cantidadRecetada.toString(),
+        "precaucionesEspeciales": receta!.precaucionesEspeciales.toString(),
+        "indicacionesEspeciales": receta!.indicacionesEspeciales.toString(),
+        "idPaciente": receta!.idPaciente.toString(),
+        "ciPaciente": receta!.ciPropietario.toString(),
+        "idHistoriaClinica": receta!.idHistoriaClinica.toString(),
+        "diagnosticoPresuntivo": receta!.diagnosticoPresuntivo.toString()
+      };
+      _recetasController.obtenerPDFReceta(stringMap);
     } catch (e) {
       print(e);
-      mostrarMensajeError(context);
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 class DetalleRecetaView extends StatefulWidget {
   const DetalleRecetaView({super.key, required this.idReceta});
   final int idReceta;
+  static const id = "detalle-receta";
   @override
   State<DetalleRecetaView> createState() =>
       _DetalleRecetaViewState(idReceta: idReceta);
@@ -33,7 +34,9 @@ class _DetalleRecetaViewState extends State<DetalleRecetaView> {
     'idPaciente': TextEditingController(),
     'ciPaciente': TextEditingController(),
     'idHistoriaClinica': TextEditingController(),
-    'diagnosticoPresuntivo': TextEditingController()
+    'diagnosticoPresuntivo': TextEditingController(),
+    'cantidadRecetada': TextEditingController(),
+    'cantidadSuministrada': TextEditingController()
   };
   Receta? receta;
   RecetasController recetasController = RecetasController();
@@ -126,6 +129,14 @@ class _DetalleRecetaViewState extends State<DetalleRecetaView> {
               inputFormatoBorderBlack(
                   context, controllers['indicacionesEspeciales']!, '',
                   readOnly: true),
+              inputFormatoBorderBlack(
+                  context, controllers['cantidadRecetada']!, "",
+                  readOnly: true),
+              SizedBox(height: 5),
+              inputFormatoBorderBlack(
+                  context, controllers['cantidadSuministrada']!, "",
+                  readOnly: true),
+              SizedBox(height: 5),
             ],
           ),
         ),
@@ -164,6 +175,10 @@ class _DetalleRecetaViewState extends State<DetalleRecetaView> {
             receta.precaucionesEspeciales ?? '';
         controllers['indicacionesEspeciales']?.text =
             receta.indicacionesEspeciales ?? '';
+        controllers['cantidadDispensada']?.text =
+            receta.cantidadDispensada.toString() ?? '0';
+        controllers['cantidadRecetada']?.text =
+            receta.cantidadRecetada.toString() ?? '0';
         controllers['ciPaciente']?.text = receta.ciPropietario ?? '';
         controllers['diagnosticoPresuntivo']?.text =
             receta.diagnosticoPresuntivo ?? '';

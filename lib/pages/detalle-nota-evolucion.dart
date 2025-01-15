@@ -8,6 +8,7 @@ import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 class DetalleNotaEvolucionView extends StatefulWidget {
   const DetalleNotaEvolucionView({super.key, required this.idNotaEvolucion});
   final int idNotaEvolucion;
+  static const id = "detalle-nota-evolucion";
   @override
   State<DetalleNotaEvolucionView> createState() =>
       _DetalleNotaEvolucionViewState(idNotaEvolucion: idNotaEvolucion);
@@ -28,7 +29,7 @@ class _DetalleNotaEvolucionViewState extends State<DetalleNotaEvolucionView> {
   final Map<String, TextEditingController> controllers = {
     'ciPaciente': TextEditingController(),
     'diagnosticoPresuntivo': TextEditingController(),
-    'cambiosResultadoTratamiento': TextEditingController(),
+    'cambiosPacienteResultadosTratamiento': TextEditingController(),
   };
   @override
   Widget build(BuildContext context) {
@@ -70,8 +71,8 @@ class _DetalleNotaEvolucionViewState extends State<DetalleNotaEvolucionView> {
               SizedBox(height: 5),
               etiquetaInputDocumento('Cambios resultados del tratamiento'),
               SizedBox(height: 5),
-              inputFormatoBorderBlack(
-                  context, controllers['cambiosResultadoTratamiento']!, '',
+              inputFormatoBorderBlack(context,
+                  controllers['cambiosPacienteResultadosTratamiento']!, '',
                   readOnly: true),
               SizedBox(height: 5),
             ],
@@ -101,7 +102,7 @@ class _DetalleNotaEvolucionViewState extends State<DetalleNotaEvolucionView> {
         controllers['ciPaciente']?.text = notaEvolucion.ciPropietario ?? '';
         controllers['diagnosticoPresuntivo']?.text =
             notaEvolucion.diagnosticoPresuntivo ?? '';
-        controllers['cambiosResultadoTratamiento']?.text =
+        controllers['cambiosPacienteResultadosTratamiento']?.text =
             notaEvolucion.cambiosPacienteResultadosTratamiento ?? '';
       });
     }

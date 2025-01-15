@@ -9,6 +9,7 @@ class DetalleExamenComplementarioView extends StatefulWidget {
   const DetalleExamenComplementarioView(
       {super.key, required this.idExamenComplementario});
   final int idExamenComplementario;
+  static const id = "detalle-examen-complementario";
   @override
   State<DetalleExamenComplementarioView> createState() =>
       _DetalleExamenComplementarioViewState(
@@ -31,8 +32,6 @@ class _DetalleExamenComplementarioViewState
   @override
   void initState() {
     super.initState();
-    // TODO: Obtener idPaciente de token
-    final idPaciente = 1;
     obtenerExamenComplementario(idExamenComplementario);
   }
 

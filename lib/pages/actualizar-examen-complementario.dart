@@ -2,22 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_grado_flutter/controladores/ExamenesComplementariosController.dart';
 import 'package:proyecto_grado_flutter/controladores/HistoriasClinicasController.dart';
 import 'package:proyecto_grado_flutter/controladores/PacientesController.dart';
+import 'package:proyecto_grado_flutter/modelos/ExamenComplementario.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
-class RegistrarExamenComplementario extends StatefulWidget {
-  const RegistrarExamenComplementario({super.key});
-  static const id = "registrar_examen_complementario";
+class ActulizarExamenComplementarioView extends StatefulWidget {
+  const ActulizarExamenComplementarioView(
+      {super.key, required this.idExamenComplementario});
+  static const id = "actualizar-examen-complementario";
+  final int idExamenComplementario;
   @override
-  State<RegistrarExamenComplementario> createState() =>
-      _RegistrarExamenComplementarioState();
+  State<ActulizarExamenComplementarioView> createState() =>
+      _ActulizarExamenComplementarioViewState(
+          idExamenComplementario: idExamenComplementario);
 }
 
-class _RegistrarExamenComplementarioState
-    extends State<RegistrarExamenComplementario> {
+class _ActulizarExamenComplementarioViewState
+    extends State<ActulizarExamenComplementarioView> {
+  final int idExamenComplementario;
   final Map<String, TextEditingController> controllers = {
     'nombre': TextEditingController(),
     'descripcion': TextEditingController(),
@@ -29,10 +34,14 @@ class _RegistrarExamenComplementarioState
     'idHistoriaClinica': TextEditingController(),
     'diagnosticoPresuntivo': TextEditingController()
   };
-  ExamenesComplementariosController examenesComplementariosController =
-      ExamenesComplementariosController();
+  ExamenComplementario? examenComplementario;
+  final examenesComplementariosController = ExamenesComplementariosController();
   List<Paciente> pacientes = [];
   List<HistoriaClinica> historiasClinicas = [];
+  final _historiasClinicasController = HistoriasClinicasController();
+  final _pacientesController = PacientesController();
+  final PageController _pageController = PageController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _onSelectItemPaciente(Paciente item) {
     setState(() {
       controllers['ciPaciente']!.text = item.ci.toString();
@@ -62,10 +71,13 @@ class _RegistrarExamenComplementarioState
 
   @override
   void initState() {
-    obtenerPacientes();
     super.initState();
+    obtenerExamenComplementario(idExamenComplementario);
+    obtenerPacientes();
   }
 
+  _ActulizarExamenComplementarioViewState(
+      {required this.idExamenComplementario});
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -85,7 +97,7 @@ class _RegistrarExamenComplementarioState
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Registrar examen complementario',
+                  'Actualizar examen complementario',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -133,12 +145,15 @@ class _RegistrarExamenComplementarioState
                     controllers['fechaSolicitud']!,
                     "",
                     _onSelectFechaSolicitud),
-                botonFormularioDocumento("Registrar", () {
+                botonFormularioDocumento("Actualizar", () {
                   final formState1 = formKey.currentState;
                   if (formState1 != null && formState1.validate()) {
-                    registrarExamenComplementario(context, controllers);
+                    actualizarExamenComplementario(context, controllers);
                   }
                 }),
+                botonFormularioDocumento("Obtener pdf", () {
+                  obtenerPDFExamenComplementario();
+                })
               ],
             ),
           ),
@@ -147,15 +162,12 @@ class _RegistrarExamenComplementarioState
     );
   }
 
-  HistoriasClinicasController historiasClinicasController =
-      HistoriasClinicasController();
-  PacientesController pacientesController = PacientesController();
   void obtenerPacientes() async {
     try {
-      List<Paciente> pacientesRecibidos =
-          await pacientesController.obtenerPacientes();
+      List<Paciente> pacientesObtenidos =
+          await _pacientesController.obtenerPacientes();
       setState(() {
-        pacientes = pacientesRecibidos;
+        pacientes = pacientesObtenidos;
       });
     } catch (e) {
       print('Error al cargar pacientes: $e');
@@ -164,7 +176,7 @@ class _RegistrarExamenComplementarioState
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      final historiasClinicaPaginadas = await historiasClinicasController
+      final historiasClinicaPaginadas = await _historiasClinicasController
           .obtenerHistoriasClinicasDePaciente(idPaciente);
       setState(() {
         historiasClinicas = historiasClinicaPaginadas['content'];
@@ -174,16 +186,69 @@ class _RegistrarExamenComplementarioState
     }
   }
 
-  Future<void> registrarExamenComplementario(BuildContext context,
+  Future<void> obtenerExamenComplementario(int idExamenComplementario) async {
+    try {
+      final examenResponse = await examenesComplementariosController
+          .obtenerExamenComplementario(idExamenComplementario);
+      setState(() {
+        examenComplementario = examenResponse;
+        establecerValoresEnControllersExamenComplementario(
+            examenComplementario);
+      });
+    } catch (e) {
+      print('Error al obtener el examen complementario: $e');
+    }
+  }
+
+  Future<void> actualizarExamenComplementario(BuildContext context,
       Map<String, TextEditingController> controllers) async {
     try {
-      await examenesComplementariosController
-          .registrarExamenComplementario(controllers);
-      mostrarMensajeExito(context,
-          titulo: "Registro examen complementario exitoso");
+      await examenesComplementariosController.actualizarExamenComplementario(
+          controllers, idExamenComplementario);
+      mostrarMensajeExito(context, titulo: "Examen complementario actualizado");
+    } catch (e) {
+      mostrarMensajeError(context);
+    }
+  }
+
+  void obtenerPDFExamenComplementario() {
+    try {
+      Map<String, String> stringMap = {
+        "id": examenComplementario!.id.toString(),
+        "nombre": examenComplementario!.nombre.toString(),
+        "descripcion": examenComplementario!.descripcion.toString(),
+        "idHistoriaClinica": examenComplementario!.idHistoriaClinica.toString(),
+        "idMedico": examenComplementario!.idMedico.toString(),
+      };
+      examenesComplementariosController
+          .obtenerPDFExamenComplementario(stringMap);
     } catch (e) {
       print(e);
-      mostrarMensajeError(context);
+    }
+  }
+
+  void establecerValoresEnControllersExamenComplementario(
+      ExamenComplementario? examenComplementario) {
+    if (examenComplementario != null) {
+      setState(() {
+        controllers['nombre']?.text = examenComplementario.nombre ?? '';
+        controllers['descripcion']?.text =
+            examenComplementario.descripcion ?? '';
+        controllers['resumenResultados']?.text =
+            examenComplementario.resumenResultados ?? '';
+        controllers['fechaResultado']?.text =
+            examenComplementario.fechaResultado.toString();
+        controllers['fechaSolicitud']?.text =
+            examenComplementario.fechaSolicitud.toString();
+        controllers['idPaciente']?.text =
+            examenComplementario.idPaciente.toString();
+        controllers['ciPaciente']?.text =
+            examenComplementario.ciPropietario ?? '';
+        controllers['idHistoriaClinica']?.text =
+            examenComplementario.idHistoriaClinica.toString();
+        controllers['diagnosticoPresuntivo']?.text =
+            examenComplementario.diagnosticoPresuntivo ?? '';
+      });
     }
   }
 }

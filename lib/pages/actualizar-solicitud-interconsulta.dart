@@ -4,20 +4,27 @@ import 'package:proyecto_grado_flutter/controladores/PacientesController.dart';
 import 'package:proyecto_grado_flutter/controladores/SolicitudesInterconsultasController.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
+import 'package:proyecto_grado_flutter/modelos/SolicitudInterconsulta.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
 import 'package:proyecto_grado_flutter/widgets/new-drawer.dart';
 import 'package:proyecto_grado_flutter/widgets/widgets-formato.dart';
 
-class RegistrarSolicitudInterconsulta extends StatefulWidget {
-  const RegistrarSolicitudInterconsulta({super.key});
-  static const id = "registrar_solicitud_interconsulta";
+class ActualizarSolicitudInterconsultaView extends StatefulWidget {
+  const ActualizarSolicitudInterconsultaView(
+      {super.key, required this.idSolicitudInterconsulta});
+
+  static const id = "actualizar-solicitud-interconsulta";
+  final int idSolicitudInterconsulta;
   @override
-  State<RegistrarSolicitudInterconsulta> createState() =>
-      _RegistrarSolicitudInterconsultaState();
+  State<ActualizarSolicitudInterconsultaView> createState() =>
+      _ActualizarSolicitudInterconsultaViewState(
+          idSolicitud: idSolicitudInterconsulta);
 }
 
-class _RegistrarSolicitudInterconsultaState
-    extends State<RegistrarSolicitudInterconsulta> {
+class _ActualizarSolicitudInterconsultaViewState
+    extends State<ActualizarSolicitudInterconsultaView> {
+  final int idSolicitud;
+  _ActualizarSolicitudInterconsultaViewState({required this.idSolicitud});
   final Map<String, TextEditingController> controllers = {
     'hospitalInterconsultado': TextEditingController(),
     'unidadInterconsultada': TextEditingController(),
@@ -29,19 +36,14 @@ class _RegistrarSolicitudInterconsultaState
     'idHistoriaClinica': TextEditingController(),
     'diagnosticoPresuntivo': TextEditingController()
   };
-  SolicitudesInterconsultasController solicitudesInterconsultasController =
-      SolicitudesInterconsultasController();
-  PacientesController pacientesController = PacientesController();
-  HistoriasClinicasController historiasClinicasController =
-      HistoriasClinicasController();
+  SolicitudInterconsulta? solicitudInterconsulta;
+  final _solicitudesController = SolicitudesInterconsultasController();
   List<Paciente> pacientes = [];
   List<HistoriaClinica> historiasClinicas = [];
-  @override
-  void initState() {
-    obtenerPacientes();
-    super.initState();
-  }
-
+  final _historiasClinicasController = HistoriasClinicasController();
+  final _pacientesController = PacientesController();
+  final PageController _pageController = PageController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   void _onSelectItemPaciente(Paciente item) {
     setState(() {
       controllers['ciPaciente']!.text = item.ci.toString();
@@ -57,7 +59,15 @@ class _RegistrarSolicitudInterconsultaState
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    obtenerSolicitudInterconsulta(idSolicitud);
+    obtenerPacientes();
+  }
+
   final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +86,7 @@ class _RegistrarSolicitudInterconsultaState
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Registro de solicitud interconsulta',
+                  'Actualizacion solicitud interconsulta',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -137,9 +147,11 @@ class _RegistrarSolicitudInterconsultaState
                 botonFormularioDocumento("Registrar", () {
                   final formState1 = formKey.currentState;
                   if (formState1 != null && formState1.validate()) {
-                    registrarSolicitudInterconsulta(context, controllers);
+                    actualizarSolicitudInterconsulta(context, controllers);
                   }
                 }),
+                botonPrimario(context, "Obtener pdf",
+                    () => {obtenerPDFSolicitudInterconsulta()})
               ],
             ),
           ),
@@ -150,10 +162,10 @@ class _RegistrarSolicitudInterconsultaState
 
   void obtenerPacientes() async {
     try {
-      List<Paciente> pacientesRecibidos =
-          await pacientesController.obtenerPacientes();
+      List<Paciente> pacientesObtenidos =
+          await _pacientesController.obtenerPacientes();
       setState(() {
-        pacientes = pacientesRecibidos;
+        pacientes = pacientesObtenidos;
       });
     } catch (e) {
       print('Error al cargar pacientes: $e');
@@ -162,8 +174,8 @@ class _RegistrarSolicitudInterconsultaState
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      final historiasClinicaPaginadas = await historiasClinicasController
-          .obtenerHistoriasClinicasDePaciente(idPaciente.toString());
+      final historiasClinicaPaginadas = await _historiasClinicasController
+          .obtenerHistoriasClinicasDePaciente(idPaciente);
       setState(() {
         historiasClinicas = historiasClinicaPaginadas['content'];
       });
@@ -172,16 +184,78 @@ class _RegistrarSolicitudInterconsultaState
     }
   }
 
-  Future<void> registrarSolicitudInterconsulta(BuildContext context,
+  Future<void> obtenerSolicitudInterconsulta(int idSolicitud) async {
+    try {
+      final solicitudResponse = await _solicitudesController
+          .obtenerSolicitudInterconsulta(idSolicitud);
+      setState(() {
+        solicitudInterconsulta = solicitudResponse;
+        establecerValoresEnControllersSolicitud(solicitudInterconsulta);
+      });
+    } catch (e) {
+      print('Error al obtener la solicitud de interconsulta: $e');
+    }
+  }
+
+  Future<void> actualizarSolicitudInterconsulta(BuildContext context,
       Map<String, TextEditingController> controllers) async {
     try {
-      await solicitudesInterconsultasController
-          .registrarSolicitudInterconsulta(controllers);
+      await _solicitudesController.actualizarSolicitudInterconsulta(
+          controllers, idSolicitud);
       mostrarMensajeExito(context,
-          titulo: "Registro soliitud interconsulta exitoso");
+          titulo: "Actualizaacion solicitud de interconsulta exitoso");
+    } catch (e) {
+      mostrarMensajeError(context);
+    }
+  }
+
+  void establecerValoresEnControllersSolicitud(
+      SolicitudInterconsulta? solicitudInterconsulta) {
+    if (solicitudInterconsulta != null) {
+      setState(() {
+        controllers['hospitalInterconsultado']?.text =
+            solicitudInterconsulta.hospitalInterconsultado ?? '';
+        controllers['unidadInterconsultada']?.text =
+            solicitudInterconsulta.unidadInterconsultada ?? '';
+        controllers['queDeseaSaber']?.text =
+            solicitudInterconsulta.queDeseaSaber ?? '';
+        controllers['sintomatologia']?.text =
+            solicitudInterconsulta.sintomatologia ?? '';
+        controllers['tratamiento']?.text =
+            solicitudInterconsulta.tratamiento ?? '';
+        controllers['idPaciente']?.text =
+            solicitudInterconsulta.idPaciente.toString();
+        controllers['ciPaciente']?.text =
+            solicitudInterconsulta.ciPropietario ?? '';
+        controllers['idHistoriaClinica']?.text =
+            solicitudInterconsulta.idHistoriaClinica.toString();
+        controllers['diagnosticoPresuntivo']?.text =
+            solicitudInterconsulta.diagnosticoPresuntivo ?? '';
+      });
+    }
+  }
+
+  obtenerPDFSolicitudInterconsulta() {
+    try {
+      Map<String, String> stringMap = {
+        "id": solicitudInterconsulta!.id.toString(),
+        "hospitalInterconsultado":
+            solicitudInterconsulta!.hospitalInterconsultado.toString(),
+        "unidadInterconsultada":
+            solicitudInterconsulta!.unidadInterconsultada.toString(),
+        "queDeseaSaber": solicitudInterconsulta!.queDeseaSaber.toString(),
+        "sintomatologia": solicitudInterconsulta!.sintomatologia.toString(),
+        "tratamiento": solicitudInterconsulta!.tratamiento.toString(),
+        "idPaciente": solicitudInterconsulta!.idPaciente.toString(),
+        "ciPaciente": solicitudInterconsulta!.ciPropietario.toString(),
+        "idHistoriaClinica":
+            solicitudInterconsulta!.idHistoriaClinica.toString(),
+        "diagnosticoPresuntivo":
+            solicitudInterconsulta!.diagnosticoPresuntivo.toString()
+      };
+      _solicitudesController.obtenerPDFSolicitudInterconsulta(stringMap);
     } catch (e) {
       print(e);
-      mostrarMensajeError(context);
     }
   }
 }

@@ -9,6 +9,7 @@ class DetallePapeletaInternacionView extends StatefulWidget {
   const DetallePapeletaInternacionView(
       {super.key, required this.idPapeletaInternacion});
   final int idPapeletaInternacion;
+  static const id = "detalle-papeleta-internacion";
   @override
   State<DetallePapeletaInternacionView> createState() =>
       _DetallePapeletaInternacionViewState(

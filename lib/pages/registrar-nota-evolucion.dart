@@ -21,7 +21,7 @@ class _RegistrarNotaEvolucionState extends State<RegistrarNotaEvolucion> {
     'ciPaciente': TextEditingController(),
     'diagnosticoPresuntivo': TextEditingController(),
     'idHistoriaClinica': TextEditingController(),
-    'cambiosResultadoTratamiento': TextEditingController(),
+    'cambiosPacienteResultadosTratamiento': TextEditingController(),
   };
   final formKey = GlobalKey<FormState>();
   NotasEvolucionController notasEvolucionController =
@@ -67,7 +67,7 @@ class _RegistrarNotaEvolucionState extends State<RegistrarNotaEvolucion> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Detalle de nota de evolucion',
+                  'Registro nota de evolucion',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -101,8 +101,8 @@ class _RegistrarNotaEvolucionState extends State<RegistrarNotaEvolucion> {
                 etiquetaInputDocumento(
                     'Cambios del paciente por resultados del tratamiento'),
                 SizedBox(height: 5),
-                inputFormFieldFormatoBorderBlack(
-                    context, controllers["cambiosResultadoTratamiento"]!, ""),
+                inputFormFieldFormatoBorderBlack(context,
+                    controllers["cambiosPacienteResultadosTratamiento"]!, ""),
                 botonFormularioDocumento("Registrar", () {
                   final formState1 = formKey.currentState;
                   if (formState1 != null && formState1.validate()) {
@@ -133,11 +133,10 @@ class _RegistrarNotaEvolucionState extends State<RegistrarNotaEvolucion> {
 
   void obtenerHistoriasClinicasDePaciente(String idPaciente) async {
     try {
-      List<HistoriaClinica> historiasClinicasRecibidas =
-          await historiasClinicasController
-              .obtenerHistoriasClinicasDePaciente(idPaciente);
+      final historiasClinicaPaginadas = await historiasClinicasController
+          .obtenerHistoriasClinicasDePaciente(idPaciente.toString());
       setState(() {
-        historiasClinicas = historiasClinicasRecibidas;
+        historiasClinicas = historiasClinicaPaginadas['content'];
       });
     } catch (e) {
       print('Error al cargar historias clinicas: $e');
@@ -148,7 +147,8 @@ class _RegistrarNotaEvolucionState extends State<RegistrarNotaEvolucion> {
       Map<String, TextEditingController> controllers) async {
     try {
       await notasEvolucionController.registrarNotaEvolucion(controllers);
-      mostrarMensajeExito(context);
+      mostrarMensajeExito(context,
+          titulo: "Registro nota de evolucion exitoso");
     } catch (e) {
       print(e);
       mostrarMensajeError(context);
