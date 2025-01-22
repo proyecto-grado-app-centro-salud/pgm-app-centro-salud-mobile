@@ -14,10 +14,10 @@ class HistoriaClinica {
   final String examenFisicoEspecial;
   final String propuestaBasicaDeConducta;
   final String tratamiento;
-  final int? idPaciente;
+  final String? idPaciente;
   final String? pacientePropietario;
   final String? ciPropietario;
-  final int? idMedico;
+  final String? idMedico;
   final String? nombreMedico;
   final int? idEspecialidad;
   final String? nombreEspecialidad;
@@ -67,12 +67,12 @@ class HistoriaClinica {
       examenFisicoEspecial: json['examenFisicoEspecial'] ?? '',
       propuestaBasicaDeConducta: json['propuestaBasicaDeConducta'] ?? '',
       tratamiento: json['tratamiento'] ?? '',
-      idPaciente: json['idPaciente'] ?? 0,
+      idPaciente: json['idPaciente'].toString() ?? '0',
       pacientePropietario: json['pacientePropietario'] ?? '',
       ciPropietario: json['ciPropietario'] ?? '',
-      idMedico: json['idMedico'] ?? 0,
+      idMedico: json['idMedico'].toString() ?? "0",
       nombreMedico: json['nombreMedico'] ?? '',
-      idEspecialidad: json['idEspecialidad'] ?? 0,
+      idEspecialidad: json['idEspecialidad'] ?? "0",
       nombreEspecialidad: json['nombreEspecialidad'] ?? '',
       createdAt:
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
@@ -84,8 +84,10 @@ class HistoriaClinica {
   }
 
   static List<HistoriaClinica> listFromString(String list) {
-    List jsonList = jsonDecode(list);
-    return jsonList.map((json) => HistoriaClinica.fromJson(json)).toList();
+    List<dynamic> contentList = jsonDecode(list);
+    return contentList
+        .map<HistoriaClinica>((json) => HistoriaClinica.fromJson(json))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -110,9 +112,9 @@ class HistoriaClinica {
       'nombreMedico': nombreMedico,
       'idEspecialidad': idEspecialidad,
       'nombreEspecialidad': nombreEspecialidad,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
-      'deletedAt': deletedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String() ?? '',
+      'updatedAt': updatedAt?.toIso8601String() ?? '',
+      'deletedAt': deletedAt?.toIso8601String() ?? '',
     };
   }
 }

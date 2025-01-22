@@ -166,7 +166,7 @@ class HistoriasClinicasController {
   Future<HistoriaClinica> obtenerHistoriaClinica(int idHistoriaClinica) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-historias-clinicas/historias-clinicas/$idHistoriaClinica",
       );
@@ -249,7 +249,7 @@ class HistoriasClinicasController {
       final token = await authController.obtenerToken();
       final response = await Dio().get(
           'http://${dotenv.env["API_URL"]}/api/microservicio-historias-clinicas/historias-clinicas/pdf',
-          queryParameters: historiaClinica,
+          queryParameters: {"id": historiaClinica['id']},
           options: Options(responseType: ResponseType.bytes, headers: {
             'Authorization': 'Bearer $token',
           }));

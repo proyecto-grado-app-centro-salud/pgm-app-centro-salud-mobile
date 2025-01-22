@@ -12,10 +12,12 @@ class Receta {
   final String? indicacionesEspeciales;
   final int? idHistoriaClinica;
   final String? diagnosticoPresuntivo;
-  final int? idPaciente;
+  final double? cantidadRecetada;
+  final double? cantidadDispensada;
+  final String? idPaciente;
   final String? pacientePropietario;
   final String? ciPropietario;
-  final int? idMedico;
+  final String? idMedico;
   final String? nombreMedico;
   final int? idEspecialidad;
   final String? nombreEspecialidad;
@@ -35,6 +37,8 @@ class Receta {
     this.indicacionesEspeciales,
     this.idHistoriaClinica,
     this.diagnosticoPresuntivo,
+    this.cantidadRecetada,
+    this.cantidadDispensada,
     this.idPaciente,
     this.pacientePropietario,
     this.ciPropietario,
@@ -63,12 +67,14 @@ class Receta {
           : null,
       precaucionesEspeciales: json['precaucionesEspeciales'] ?? '',
       indicacionesEspeciales: json['indicacionesEspeciales'] ?? '',
+      cantidadRecetada: json['cantidadRecetada'] ?? 0,
+      cantidadDispensada: json['cantidadDispensada'] ?? 0,
       idHistoriaClinica: json['idHistoriaClinica'] ?? 0,
       diagnosticoPresuntivo: json['diagnosticoPresuntivo'] ?? '',
-      idPaciente: json['idPaciente'] ?? 0,
+      idPaciente: json['idPaciente'].toString() ?? "0",
       pacientePropietario: json['pacientePropietario'] ?? '',
       ciPropietario: json['ciPropietario'] ?? '',
-      idMedico: json['idMedico'] ?? 0,
+      idMedico: json['idMedico'].toString() ?? "0",
       nombreMedico: json['nombreMedico'] ?? '',
       idEspecialidad: json['idEspecialidad'] ?? 0,
       nombreEspecialidad: json['nombreEspecialidad'] ?? '',
@@ -82,8 +88,10 @@ class Receta {
   }
 
   static List<Receta> listFromString(String list) {
-    List jsonList = jsonDecode(list);
-    return jsonList.map((json) => Receta.fromJson(json)).toList();
+    Map<String, dynamic> jsonList = jsonDecode(list);
+    print(jsonList);
+    List<dynamic> contentList = jsonList['content'];
+    return contentList.map<Receta>((json) => Receta.fromJson(json)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -97,6 +105,8 @@ class Receta {
       'fechaVencimiento': fechaVencimiento?.toIso8601String(),
       'precaucionesEspeciales': precaucionesEspeciales,
       'indicacionesEspeciales': indicacionesEspeciales,
+      'cantidadRecetada': cantidadRecetada,
+      'cantidadDispensada': cantidadDispensada,
       'idHistoriaClinica': idHistoriaClinica,
       'diagnosticoPresuntivo': diagnosticoPresuntivo,
       'idPaciente': idPaciente,

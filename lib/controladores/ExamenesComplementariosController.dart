@@ -143,7 +143,7 @@ class ExamenesComplementariosController {
       int idExamenComplementario) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-examenes-complementarios/examenes-complementarios/$idExamenComplementario",
       );
@@ -206,7 +206,7 @@ class ExamenesComplementariosController {
       final token = await authController.obtenerToken();
       final response = await Dio().get(
           'http://${dotenv.env["API_URL"]}/api/microservicio-examenes-complementarios/examenes-complementarios/pdf',
-          queryParameters: examenComplementario,
+          queryParameters: {"id": examenComplementario['id']},
           options: Options(responseType: ResponseType.bytes, headers: {
             'Authorization': 'Bearer $token',
           }));

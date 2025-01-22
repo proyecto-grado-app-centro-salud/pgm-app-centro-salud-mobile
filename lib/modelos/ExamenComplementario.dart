@@ -13,10 +13,10 @@ class ExamenComplementario {
   final DateTime? deletedAt;
   final int idHistoriaClinica;
   final String? diagnosticoPresuntivo;
-  final int? idPaciente;
+  final String? idPaciente;
   final String? pacientePropietario;
   final String? ciPropietario;
-  final int idMedico;
+  final String idMedico;
   final String? nombreMedico;
   final int? idEspecialidad;
   final String? nombreEspecialidad;
@@ -63,10 +63,10 @@ class ExamenComplementario {
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
       idHistoriaClinica: json['idHistoriaClinica'] ?? 0,
       diagnosticoPresuntivo: json['diagnosticoPresuntivo'] ?? '',
-      idPaciente: json['idPaciente'] ?? 0,
+      idPaciente: json['idPaciente'].toString() + "" ?? "0",
       pacientePropietario: json['pacientePropietario'] ?? '',
       ciPropietario: json['ciPropietario'] ?? '',
-      idMedico: json['idMedico'] ?? 0,
+      idMedico: json['idMedico'].toString() + "" ?? "0",
       nombreMedico: json['nombreMedico'] ?? '',
       idEspecialidad: json['idEspecialidad'] ?? 0,
       nombreEspecialidad: json['nombreEspecialidad'] ?? '',
@@ -97,7 +97,12 @@ class ExamenComplementario {
   }
 
   static List<ExamenComplementario> listFromString(String list) {
-    List jsonList = jsonDecode(list);
-    return jsonList.map((json) => ExamenComplementario.fromJson(json)).toList();
+    Map<String, dynamic> jsonList = jsonDecode(list);
+    print(jsonList);
+    List<dynamic> contentList = jsonList['content'];
+    return contentList
+        .map<ExamenComplementario>(
+            (json) => ExamenComplementario.fromJson(json))
+        .toList();
   }
 }

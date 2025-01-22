@@ -21,6 +21,7 @@ import 'package:proyecto_grado_flutter/pages/my_profile.dart';
 import 'package:proyecto_grado_flutter/pages/recuperar_contrasenia.dart';
 import 'package:proyecto_grado_flutter/pages/registrar_ficha_medica.dart';
 import 'package:proyecto_grado_flutter/util/colores.dart';
+import 'package:proyecto_grado_flutter/util/size.dart';
 import 'package:proyecto_grado_flutter/util/transiciones.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,7 @@ class _NavDrawerState extends State<NavDrawer> {
   @override
   void initState() {
     obtenerToken();
+    obtenerOpcionesMenu();
     super.initState();
   }
 
@@ -47,7 +49,7 @@ class _NavDrawerState extends State<NavDrawer> {
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     print(preferences.getString("token"));
-    if (preferences.getString("token") != "") {
+    if (preferences.getString("token")!.isNotEmpty) {
       setState(() {
         logeado = true;
       });
@@ -72,8 +74,9 @@ class _NavDrawerState extends State<NavDrawer> {
           text: "Logout exitoso",
           confirmButtonText: "Aceptar",
           onConfirm: () {
-            Navigator.pop(context);
-            Navigator.push(context, FadeRoute(page: const HomePage()));
+            if (mounted) {
+              Navigator.push(context, FadeRoute(page: const HomePage()));
+            }
           }),
     );
   }
@@ -92,8 +95,8 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             child: Center(
               child: Container(
-                  width: 75,
-                  height: 75,
+                  width: displayWidth(context),
+                  height: displayHeight(context),
                   child: Image.asset(
                     "assets/hospital.jpg",
                     fit: BoxFit.cover,
@@ -126,25 +129,49 @@ class _NavDrawerState extends State<NavDrawer> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.login),
+            leading: Icon(Icons.people),
             title: Text('Equipo medico'),
             onTap: () => {
               Navigator.pop(context),
               Navigator.push(context, FadeRoute(page: const UnlEquipoMedico()))
             },
           ),
-          Column(
-            children: opcionesMenu.map((especialidad) {
-              return ListTile(
-                leading: Icon(especialidad['icono']),
-                title: Text(especialidad['title']),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, especialidad['route']);
-                },
-              );
-            }).toList(),
-          ),
+          (logeado)
+              ? Column(
+                  children: opcionesMenu.map((especialidad) {
+                    return ListTile(
+                      leading: Icon(especialidad['icono']),
+                      title: Text(especialidad['title']),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, especialidad['route']);
+                      },
+                    );
+                  }).toList(),
+                )
+              : const SizedBox(),
+          (!logeado)
+              ? Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.login),
+                      title: Text('Iniciar sesion'),
+                      onTap: () => {
+                        Navigator.pop(context),
+                        Navigator.push(context, FadeRoute(page: const Login()))
+                      },
+                    ),
+                  ],
+                )
+              : ListTile(
+                  leading: Icon(Icons.login),
+                  title: Text('Cerrar sesion'),
+                  onTap: () => {
+                    logout(),
+                    Navigator.pop(context),
+                    Navigator.push(context, FadeRoute(page: const HomePage()))
+                  },
+                ),
           // ListTile(
           //   leading: Icon(Icons.account_circle_outlined),
           //   title: Text('Mi perfil'),
@@ -170,7 +197,7 @@ class _NavDrawerState extends State<NavDrawer> {
           //     Navigator.push(context, FadeRoute(page: const Login()))
           //   },
           // ),
-          (opcionesMenu.isNotEmpty)
+          (logeado)
               ? ListTile(
                   leading: Icon(Icons.login),
                   title: Text('Menu'),
@@ -352,7 +379,7 @@ class _NavDrawerState extends State<NavDrawer> {
   final _authController = AuthController();
 
   final _opcionesMenuController = OpcionesMenuController();
-  Future<void> obtenerRolesUsuario() async {
+  Future<void> obtenerOpcionesMenu() async {
     List<String> rolesObtenidos = await _authController.obtenerRolesUsuario();
     List opcionesMenuObtenidos =
         _opcionesMenuController.obtenerOpcionesMenuPorRol(rolesObtenidos);

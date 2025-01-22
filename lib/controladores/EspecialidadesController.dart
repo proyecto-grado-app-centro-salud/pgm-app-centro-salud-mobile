@@ -11,7 +11,7 @@ class EspecialidadesController {
   Future<List<Especialidad>> obtenerEspecialidades() async {
     final token = await authController.obtenerToken();
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-gestion-informacion-centro-medico/especialidades",
       );
@@ -36,7 +36,7 @@ class EspecialidadesController {
   obtenerEspecialidad(int idEspecialidad) async {
     final token = await authController.obtenerToken();
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-gestion-informacion-centro-medico/especialidades/$idEspecialidad",
       );

@@ -6,19 +6,21 @@ import 'package:proyecto_grado_flutter/modelos/Paciente.dart';
 import 'package:http/http.dart' as http;
 
 class PacientesController {
+  final authController = AuthController();
   Future<List<Paciente>> obtenerPacientes() async {
-    final authController = AuthController();
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      print(token);
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-gestion-usuarios/pacientes",
       );
+      // final uri=Uri.parse(url);
       final response = await http.get(
         uri,
         headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
         },
       );
       if (response.statusCode != 200) {

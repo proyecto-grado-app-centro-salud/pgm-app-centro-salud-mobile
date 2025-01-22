@@ -149,7 +149,7 @@ class NotasReferenciaController {
   Future<NotaReferencia> obtenerNotaReferencia(int idNotaReferencia) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-notas-referencia/notas-referencia/$idNotaReferencia",
       );
@@ -222,7 +222,7 @@ class NotasReferenciaController {
       final token = await authController.obtenerToken();
       final response = await Dio().get(
           'http://${dotenv.env["API_URL"]}/api/microservicio-notas-referencia/notas-referencia/pdf',
-          queryParameters: notaReferencia,
+          queryParameters: {"id": notaReferencia['id']},
           options: Options(responseType: ResponseType.bytes, headers: {
             'Authorization': 'Bearer $token',
           }));

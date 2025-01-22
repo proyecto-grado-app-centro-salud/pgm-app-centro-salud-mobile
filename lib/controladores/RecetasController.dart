@@ -151,7 +151,7 @@ class RecetasController {
   Future<Receta> obtenerReceta(int idReceta) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-recetas/recetas/$idReceta",
       );

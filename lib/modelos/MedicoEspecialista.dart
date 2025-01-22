@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:proyecto_grado_flutter/modelos/Imagen.dart';
 
 class MedicoEspecialista {
-  final int idUsuario;
+  final String idUsuario;
   final List<Imagen> imagenes;
   final String nombres;
   final String apellidoPaterno;
@@ -37,7 +37,7 @@ class MedicoEspecialista {
             .toList() ??
         [];
     return MedicoEspecialista(
-      idUsuario: json['idUsuario'] ?? 0,
+      idUsuario: json['idUsuario'] ?? "0",
       imagenes: imagenes.isNotEmpty
           ? imagenes
           : [

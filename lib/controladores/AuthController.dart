@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class AuthController {
   Future<String> obtenerIdUsuario() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString("id") ?? "0";
+    return preferences.getString("id") ?? "";
   }
 
   Future<String> obtenerToken() async {
@@ -63,7 +63,7 @@ class AuthController {
       // );
       print(username);
       final response = await http.get(
-          Uri.http(dotenv.env["API_URL"]!,
+          Uri.https(dotenv.env["API_URL"]!,
               "/api/microservicio-gestion-usuarios/v1.0/usuarios/codigo-verificacion/${username.trim()}"),
           headers: <String, String>{
             'Content-Type': 'application/json',

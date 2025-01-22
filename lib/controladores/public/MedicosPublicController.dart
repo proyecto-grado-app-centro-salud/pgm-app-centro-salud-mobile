@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 class MedicosPublicController {
   Future<List<MedicoEspecialista>> obtenerEquipoMedico() async {
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
-        "/api/microservicio-gestion-usuarios/medicos",
+        "/api/microservicio-gestion-informacion-centro-medico/publico/medicos",
       );
       final response = await http.get(
         uri,
@@ -31,9 +31,9 @@ class MedicosPublicController {
 
   Future<MedicoEspecialista> obtenerMedico(String idMedico) async {
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
-        '/api/microservicio-gestion-usuarios/medicos/$idMedico',
+        '/api/microservicio-gestion-informacion-centro-medico/publico/medicos/$idMedico',
       );
       final response = await http.get(
         uri,

@@ -2,6 +2,7 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl/intl.dart';
 import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 import 'package:proyecto_grado_flutter/modelos/HistoriasClinicas.dart';
 import 'package:proyecto_grado_flutter/modelos/MedicoEspecialista.dart';
@@ -82,10 +83,9 @@ Widget cardInformacionDocumento(BuildContext context, documento, tipoDocumento,
                 documento.diagnosticoPresuntivo.toString()),
             campoFilaDocumento(
                 'Paciente', documento.pacientePropietario.toString()),
+            campoFilaDocumento('CI paciente', documento.idPaciente.toString()),
             campoFilaDocumento(
-                'CI paciente', documento.ciPropietario.toString()),
-            campoFilaDocumento(
-                'Fecha creación', documento.createdAt.toString()),
+                'Fecha', DateFormat('dd-MM-yyyy').format(documento.updatedAt)),
             campoFilaDocumento(
                 'Especialidad', documento.nombreEspecialidad.toString()),
             campoFilaDocumento(
@@ -145,6 +145,40 @@ Widget cardInformacionDocumento(BuildContext context, documento, tipoDocumento,
           ),
         ),
       ],
+    ),
+  );
+}
+
+Widget listadoElementos(BuildContext context, elementos,
+    Function(dynamic) contenidoElemento, Function(dynamic) opcionesElemento) {
+  return Container(
+    child: ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: elementos.length,
+      itemBuilder: (context, index) {
+        dynamic elemento = elementos[index];
+        return Container(
+          margin: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Color.fromRGBO(10, 74, 110, 1),
+          ),
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              contenidoElemento(elemento),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: opcionesElemento(elemento)),
+              ),
+            ],
+          ),
+        );
+      },
     ),
   );
 }
@@ -242,101 +276,279 @@ Widget inputFormatoBorderBlack(
   );
 }
 
+// inputListSuggestionsPacientes(BuildContext context, List<Paciente> suggestions,
+//     controller, void Function(Paciente item) onSelectItemPaciente) {
+//   return TypeAheadField(
+//     controller: controller,
+//     suggestionsCallback: (pattern) async {
+//       return suggestions
+//           .where((suggestion) =>
+//               suggestion.ci.toLowerCase().contains(pattern.toLowerCase()))
+//           .toList();
+//     },
+//     itemBuilder: (context, suggestion) {
+//       return ListTile(
+//         title: Text(suggestion.ci),
+//       );
+//     },
+//     onSelected: (suggestion) {
+//       onSelectItemPaciente(suggestion);
+//     },
+//   );
+// }
 inputListSuggestionsPacientes(BuildContext context, List<Paciente> suggestions,
-    controller, void Function(Paciente item) onSelectItemPaciente) {
-  return TypeAheadField(
+    controller, void Function(Paciente item) onSelectItemPaciente,
+    {Function(String?) validate = _defaultValidator}) {
+  return TextFormField(
     controller: controller,
-    suggestionsCallback: (pattern) async {
-      return suggestions
-          .where((suggestion) =>
-              suggestion.ci.toLowerCase().contains(pattern.toLowerCase()))
-          .toList();
+    decoration: const InputDecoration(
+      filled: true,
+      fillColor: Colores.color1,
+      labelText: 'Seleccione una paciente',
+      border: OutlineInputBorder(),
+    ),
+    validator: (value) {
+      return validate(value);
     },
-    itemBuilder: (context, suggestion) {
-      return ListTile(
-        title: Text(suggestion.ci),
+    readOnly: true,
+    onTap: () async {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Seleccione una paciente'),
+            content: TypeAheadField(
+              controller: controller,
+              suggestionsCallback: (pattern) async {
+                return suggestions
+                    .where((suggestion) => suggestion.ci
+                        .toLowerCase()
+                        .contains(pattern.toLowerCase()))
+                    .toList();
+              },
+              itemBuilder: (context, suggestion) {
+                return ListTile(
+                  title: Text(suggestion.ci),
+                );
+              },
+              onSelected: (suggestion) {
+                onSelectItemPaciente(suggestion);
+              },
+            ),
+          );
+        },
       );
-    },
-    onSelected: (suggestion) {
-      onSelectItemPaciente(suggestion);
     },
   );
 }
+
+// inputListSuggestionsEspecialidades(
+//     BuildContext context,
+//     List<Especialidad> suggestions,
+//     controller,
+//     void Function(Especialidad item) onSelectItemEspecialidad) {
+//   return TypeAheadField(
+//     controller: controller,
+//     suggestionsCallback: (pattern) async {
+//       return suggestions
+//           .where((suggestion) =>
+//               suggestion.nombre.toLowerCase().contains(pattern.toLowerCase()))
+//           .toList();
+//     },
+//     itemBuilder: (context, suggestion) {
+//       return ListTile(
+//         title: Text(suggestion.nombre),
+//       );
+//     },
+//     onSelected: (suggestion) {
+//       onSelectItemEspecialidad(suggestion);
+//     },
+//   );
+// }
 
 inputListSuggestionsEspecialidades(
     BuildContext context,
     List<Especialidad> suggestions,
     controller,
-    void Function(Especialidad item) onSelectItemEspecialidad) {
-  return TypeAheadField(
+    void Function(Especialidad item) onSelectItemEspecialidad,
+    {Function(String?) validate = _defaultValidator}) {
+  return TextFormField(
     controller: controller,
-    suggestionsCallback: (pattern) async {
-      return suggestions
-          .where((suggestion) =>
-              suggestion.nombre.toLowerCase().contains(pattern.toLowerCase()))
-          .toList();
+    decoration: const InputDecoration(
+      filled: true,
+      fillColor: Colores.color1,
+      labelText: 'Seleccione una especialidad',
+      border: OutlineInputBorder(),
+    ),
+    validator: (value) {
+      return validate(value);
     },
-    itemBuilder: (context, suggestion) {
-      return ListTile(
-        title: Text(suggestion.nombre),
+    readOnly: true,
+    onTap: () async {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              title: Text('Seleccione una especialidad'),
+              content: TypeAheadField(
+                controller: controller,
+                suggestionsCallback: (pattern) async {
+                  return suggestions
+                      .where((suggestion) => suggestion.nombre
+                          .toLowerCase()
+                          .contains(pattern.toLowerCase()))
+                      .toList();
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.nombre),
+                  );
+                },
+                onSelected: (suggestion) {
+                  onSelectItemEspecialidad(suggestion);
+                },
+              ));
+        },
       );
-    },
-    onSelected: (suggestion) {
-      onSelectItemEspecialidad(suggestion);
     },
   );
 }
+
+// inputListSuggestionsHistoriasClinicas(
+//     BuildContext context,
+//     List<HistoriaClinica> suggestions,
+//     controller,
+//     void Function(HistoriaClinica item) onSelectItemHistoriaClinica) {
+//   return TypeAheadField(
+//     controller: controller,
+//     suggestionsCallback: (pattern) async {
+//       return suggestions
+//           .where((suggestion) => suggestion.diagnosticoPresuntivo
+//               .toLowerCase()
+//               .contains(pattern.toLowerCase()))
+//           .toList();
+//     },
+//     itemBuilder: (context, suggestion) {
+//       return ListTile(
+//         title: Text(suggestion.diagnosticoPresuntivo),
+//       );
+//     },
+//     onSelected: (suggestion) {
+//       onSelectItemHistoriaClinica(suggestion);
+//     },
+//   );
+// }
 
 inputListSuggestionsHistoriasClinicas(
     BuildContext context,
     List<HistoriaClinica> suggestions,
     controller,
-    void Function(HistoriaClinica item) onSelectItemHistoriaClinica) {
-  return TypeAheadField(
+    void Function(HistoriaClinica item) onSelectItemHistoriaClinica,
+    {Function(String?) validate = _defaultValidator}) {
+  return TextFormField(
     controller: controller,
-    suggestionsCallback: (pattern) async {
-      return suggestions
-          .where((suggestion) => suggestion.diagnosticoPresuntivo
-              .toLowerCase()
-              .contains(pattern.toLowerCase()))
-          .toList();
+    decoration: const InputDecoration(
+      filled: true,
+      fillColor: Colores.color1,
+      labelText: 'Seleccione una historia clinica',
+      border: OutlineInputBorder(),
+    ),
+    validator: (value) {
+      return validate(value);
     },
-    itemBuilder: (context, suggestion) {
-      return ListTile(
-        title: Text(suggestion.diagnosticoPresuntivo),
+    readOnly: true,
+    onTap: () async {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              title: Text('Seleccione una historia clinica'),
+              content: TypeAheadField(
+                controller: controller,
+                suggestionsCallback: (pattern) async {
+                  return suggestions
+                      .where((suggestion) => suggestion.diagnosticoPresuntivo
+                          .toLowerCase()
+                          .contains(pattern.toLowerCase()))
+                      .toList();
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.diagnosticoPresuntivo),
+                  );
+                },
+                onSelected: (suggestion) {
+                  onSelectItemHistoriaClinica(suggestion);
+                },
+              ));
+        },
       );
-    },
-    onSelected: (suggestion) {
-      onSelectItemHistoriaClinica(suggestion);
     },
   );
 }
 
 Widget inputFormFieldFormatoBorderBlack(
-    BuildContext context, TextEditingController controlador, String hint) {
+    BuildContext context, TextEditingController controlador, String hint,
+    {Function(String?) validate = _defaultValidator}) {
   return Container(
     width: double.infinity,
-    decoration: BoxDecoration(
-      color: Color(0xffffffff),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Color(0xff000000)),
-    ),
+    padding: EdgeInsets.all(0),
+    margin: EdgeInsets.all(0),
+    // decoration: BoxDecoration(
+    //   color: Color(0xffffffff),
+    //   borderRadius: BorderRadius.circular(10),
+    //   border: Border.all(color: Color(0xff000000)),
+    // ),
     child: TextFormField(
-        decoration: InputDecoration(hintText: hint),
-        controller: controlador,
-        minLines: 1,
-        maxLines: null,
-        validator: (value) {
-          return null;
-        }),
+      decoration: InputDecoration(
+          filled: true,
+          fillColor: Colores.color1,
+          hintText: hint,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0))),
+      controller: controlador,
+      minLines: 1,
+      maxLines: null,
+      validator: (value) {
+        return validate(value);
+      },
+    ),
   );
+}
+// Widget inputFormFieldObscureFormatoBorderBlack(
+//     BuildContext context, TextEditingController controlador, String hint,
+//     {Function(String?) validate = _defaultValidator,bool visible=false}) {
+//   return Container(
+//     width: double.infinity,
+//     padding: EdgeInsets.all(0),
+//     margin: EdgeInsets.all(0),
+//     child: TextFormField(
+
+//       obscureText: visible,
+//       decoration: InputDecoration(
+//           hintText: hint,
+//           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+//           ),
+//       controller: controlador,
+//       minLines: 1,
+//       maxLines: null,
+//       validator: (value) {
+//         return validate(value);
+//       },
+//     ),
+//   );
+// }
+
+String? _defaultValidator(String? value) {
+  return null;
 }
 
 Widget inputDateFormFieldFormatoBorderBlack(
     BuildContext context,
     TextEditingController textEditingController,
     String hint,
-    void Function(String date) onSelectedDate) {
+    void Function(String date) onSelectedDate,
+    [DateTime? firstDate,
+    DateTime? lastDate]) {
   return Container(
     width: double.infinity,
     decoration: BoxDecoration(
@@ -345,30 +557,32 @@ Widget inputDateFormFieldFormatoBorderBlack(
       border: Border.all(color: Color(0xff000000)),
     ),
     child: TextFormField(
+      validator: _defaultValidator,
       controller: textEditingController,
       decoration: InputDecoration(
+        filled: true,
+        fillColor: Colores.color1,
         labelText: 'Fecha',
         hintText: 'Selecciona una fecha',
         suffixIcon: IconButton(
           icon: Icon(Icons.calendar_today),
-          onPressed: () => _selectDate(context, onSelectedDate),
+          onPressed: () =>
+              _selectDate(context, onSelectedDate, firstDate, lastDate),
         ),
       ),
       readOnly: true,
-      validator: (value) {
-        return null;
-      },
     ),
   );
 }
 
 Future<void> _selectDate(
-    BuildContext context, void Function(String date) onSelectedDate) async {
+    BuildContext context, void Function(String date) onSelectedDate,
+    [DateTime? firstDate, DateTime? lastDate]) async {
   final DateTime? picked = await showDatePicker(
     context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2101),
+    initialDate: (firstDate == null) ? DateTime.now() : firstDate,
+    firstDate: (firstDate == null) ? DateTime(2000) : firstDate,
+    lastDate: (lastDate == null) ? DateTime(2101) : lastDate,
   );
   if (picked != null && picked != DateTime.now()) {
     onSelectedDate("${picked.toLocal()}".split(' ')[0]);
@@ -380,6 +594,7 @@ Widget inputFormatoTextoOculto(
   double baseWidth = 375;
   double fem = MediaQuery.of(context).size.width / baseWidth;
   double ffem = fem * 0.97;
+  bool visible = false;
   return Container(
     // frame1Fyh (1:3)
     margin: EdgeInsets.fromLTRB(3.5 * fem, 3.5 * fem, 3.5 * fem, 3.5 * fem),
@@ -398,11 +613,11 @@ Widget inputFormatoTextoOculto(
       ],
     ),
     child: TextField(
-      obscureText: true,
+      obscureText: visible,
       decoration: InputDecoration(
           hintText: hint,
-          suffixIcon:
-              GestureDetector(onTap: () {}, child: Icon(Icons.remove_red_eye))),
+          suffixIcon: GestureDetector(
+              child: GestureDetector(child: Icon(Icons.remove_red_eye)))),
       controller: controlador,
     ),
   );
@@ -496,12 +711,181 @@ Widget titulo(BuildContext context, String titulo) {
   );
 }
 
+// Widget obtenerVistaMisDocumentosExpedienteClinico(
+//     BuildContext context,
+//     List documentos,
+//     String nombreDocumento,
+//     String urlImagenBanner,
+//     TextEditingController diagnosticoPresuntivo,
+//     [Function()? metodoBuscar,
+//     Function(dynamic)? metodoVerDetalle]) {
+//   return Container(
+//     width: displayWidth(context),
+//     decoration: BoxDecoration(
+//       color: Colores.color2,
+//     ),
+//     child: Stack(
+//       children: <Widget>[
+//         Positioned(
+//           top: 0,
+//           left: 0,
+//           child: Container(
+//             width: displayWidth(context),
+//             height: displayHeight(context) * 0.3,
+//             decoration: BoxDecoration(
+//               image: DecorationImage(
+//                 image: AssetImage(urlImagenBanner),
+//                 fit: BoxFit.cover,
+//               ),
+//             ),
+//           ),
+//         ),
+//         Positioned(
+//           top: 180,
+//           left: 0,
+//           bottom: 10,
+//           right: 10,
+//           child: SingleChildScrollView(
+//             child: Container(
+//               width: displayWidth(context),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.only(
+//                   topLeft: Radius.circular(40),
+//                   topRight: Radius.circular(40),
+//                   bottomLeft: Radius.circular(0),
+//                   bottomRight: Radius.circular(0),
+//                 ),
+//                 color: Colores.color2,
+//               ),
+//               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: <Widget>[
+//                   Center(
+//                     child: Text(
+//                       'Mis ${nombreDocumento.toLowerCase()}s',
+//                       textAlign: TextAlign.center,
+//                       style: TextStyle(
+//                         color: Colores.color5,
+//                         fontFamily: 'Inter',
+//                         fontSize: 18,
+//                       ),
+//                     ),
+//                   ),
+//                   SizedBox(height: 5),
+//                   obtenerListadoDocumentosClinicos(
+//                       context,
+//                       nombreDocumento,
+//                       diagnosticoPresuntivo,
+//                       documentos,
+//                       metodoBuscar,
+//                       null,
+//                       metodoVerDetalle)
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+// Widget gestionDocumentosExpedienteClinico(
+//     BuildContext context,
+//     List documentos,
+//     String nombreDocumento,
+//     String urlImagenBanner,
+//     TextEditingController diagnosticoPresuntivo,
+//     [VoidCallback? metodoBuscar,
+//     VoidCallback? metodoRegistrar,
+//     Function(dynamic)? metodoEditar,
+//     Function(dynamic)? metodoVerDetalle]) {
+//   metodoRegistrar ??= () {};
+//   return Container(
+//     width: displayWidth(context),
+//     decoration: BoxDecoration(
+//       color: Colores.color2,
+//     ),
+//     child: Stack(
+//       children: <Widget>[
+//         Positioned(
+//           top: 0,
+//           left: 0,
+//           child: Container(
+//             width: displayWidth(context),
+//             height: displayHeight(context) * 0.3,
+//             decoration: BoxDecoration(
+//               image: DecorationImage(
+//                 image: AssetImage(urlImagenBanner),
+//                 fit: BoxFit.cover,
+//               ),
+//             ),
+//           ),
+//         ),
+//         Positioned(
+//           top: 180,
+//           left: 0,
+//           bottom: 0,
+//           right: 0,
+//           child: SingleChildScrollView(
+//             child: Container(
+//               width: displayWidth(context),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.only(
+//                   topLeft: Radius.circular(40),
+//                   topRight: Radius.circular(40),
+//                   bottomLeft: Radius.circular(0),
+//                   bottomRight: Radius.circular(0),
+//                 ),
+//                 color: Colores.color2,
+//               ),
+//               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: <Widget>[
+//                   Center(
+//                     child: Text(
+//                       'Gestion ${nombreDocumento.toLowerCase()}',
+//                       textAlign: TextAlign.center,
+//                       style: TextStyle(
+//                         color: Colores.color5,
+//                         fontFamily: 'Inter',
+//                         fontSize: 18,
+//                       ),
+//                     ),
+//                   ),
+//                   SizedBox(height: 5),
+//                   botonPrimario(
+//                       context,
+//                       'Registrar ${nombreDocumento.toLowerCase()}',
+//                       metodoRegistrar),
+//                   SizedBox(height: 5),
+//                   obtenerListadoDocumentosClinicos(
+//                       context,
+//                       nombreDocumento,
+//                       diagnosticoPresuntivo,
+//                       documentos,
+//                       metodoBuscar,
+//                       metodoEditar,
+//                       metodoVerDetalle)
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 Widget obtenerVistaMisDocumentosExpedienteClinico(
     BuildContext context,
     List documentos,
     String nombreDocumento,
     String urlImagenBanner,
-    TextEditingController diagnosticoPresuntivo,
+    Map<String, TextEditingController> parametros,
     [VoidCallback? metodoBuscar,
     Function(dynamic)? metodoVerDetalle]) {
   return Container(
@@ -549,7 +933,7 @@ Widget obtenerVistaMisDocumentosExpedienteClinico(
                 children: <Widget>[
                   Center(
                     child: Text(
-                      'Mis ${nombreDocumento.toLowerCase()}s',
+                      'Mis documentos: $nombreDocumento',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colores.color5,
@@ -559,14 +943,112 @@ Widget obtenerVistaMisDocumentosExpedienteClinico(
                     ),
                   ),
                   SizedBox(height: 5),
+                  Container(
+                    child: Column(children: [
+                      Text(
+                        'Diagnóstico presuntivo',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["diagnosticoPresuntivo"]!, ""),
+                      SizedBox(height: 10),
+                      Text(
+                        'Nombre medico',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["nombreMedico"]!, ""),
+                      SizedBox(height: 10),
+                      Text(
+                        'Nombre especialidad',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["nombreEspecialidad"]!, ""),
+                      SizedBox(height: 10),
+                      inputDateFormFieldFormatoBorderBlack(
+                          context, parametros["fechaInicio"]!, "",
+                          (String date) {
+                        parametros["fechaInicio"]!.text = date;
+                      }),
+                      inputDateFormFieldFormatoBorderBlack(
+                          context, parametros["fechaFin"]!, "", (String date) {
+                        parametros["fechaFin"]!.text = date;
+                      }),
+                      botonPrimario(context, "Buscar", metodoBuscar!),
+                      SizedBox(height: 10),
+                    ]),
+                  ),
+                  Text(
+                      "Numero de documentos encontrados ${parametros['numeroDocumentos']!.text}"),
                   obtenerListadoDocumentosClinicos(
                       context,
                       nombreDocumento,
-                      diagnosticoPresuntivo,
+                      TextEditingController(),
                       documentos,
-                      metodoBuscar,
-                      null,
-                      metodoVerDetalle)
+                      () {},
+                      null, (idDocumento) {
+                    (metodoVerDetalle != null)
+                        ? metodoVerDetalle(idDocumento)
+                        : null;
+                  }),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          int numeroPagina =
+                              int.parse(parametros["numeroPagina"]!.text);
+                          if (numeroPagina > 0) {
+                            numeroPagina--;
+                            parametros["numeroPagina"]!.text = '$numeroPagina';
+                            metodoBuscar();
+                          }
+                        },
+                        child: Text('Anterior',
+                            style: TextStyle(color: Colors.black)),
+                      ),
+                      SizedBox(width: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          int numeroPagina =
+                              int.parse(parametros["numeroPagina"]!.text);
+                          numeroPagina++;
+                          parametros["numeroPagina"]!.text = '$numeroPagina';
+                          metodoBuscar();
+                        },
+                        child: Text('Siguiente',
+                            style:
+                                TextStyle(color: Colors.black)), // Texto negro
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -582,7 +1064,7 @@ Widget gestionDocumentosExpedienteClinico(
     List documentos,
     String nombreDocumento,
     String urlImagenBanner,
-    TextEditingController diagnosticoPresuntivo,
+    Map<String, TextEditingController> parametros,
     [VoidCallback? metodoBuscar,
     VoidCallback? metodoRegistrar,
     Function(dynamic)? metodoEditar,
@@ -633,7 +1115,7 @@ Widget gestionDocumentosExpedienteClinico(
                 children: <Widget>[
                   Center(
                     child: Text(
-                      'Gestion ${nombreDocumento.toLowerCase()}',
+                      'Gestion documentos: $nombreDocumento',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colores.color5,
@@ -644,18 +1126,133 @@ Widget gestionDocumentosExpedienteClinico(
                   ),
                   SizedBox(height: 5),
                   botonPrimario(
-                      context,
-                      'Registrar ${nombreDocumento.toLowerCase()}',
-                      metodoRegistrar),
+                      context, 'Registrar ${nombreDocumento.toLowerCase()}',
+                      () {
+                    if (metodoRegistrar != null) {
+                      metodoRegistrar();
+                    }
+                  }),
                   SizedBox(height: 5),
+                  Container(
+                    child: Column(children: [
+                      Text(
+                        'Diagnóstico presuntivo',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["diagnosticoPresuntivo"]!, ""),
+                      SizedBox(height: 10),
+                      Text(
+                        'CI propietario',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["ciPaciente"]!, ""),
+                      SizedBox(height: 10),
+                      Text(
+                        'Nombre medico',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["nombreMedico"]!, ""),
+                      SizedBox(height: 10),
+                      Text(
+                        'Nombre especialidad',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Colores.color5,
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      inputFormatoBorderBlack(
+                          context, parametros["nombreEspecialidad"]!, ""),
+                      SizedBox(height: 10),
+                      inputDateFormFieldFormatoBorderBlack(
+                          context, parametros["fechaInicio"]!, "",
+                          (String date) {
+                        parametros["fechaInicio"]!.text = date;
+                      }),
+                      inputDateFormFieldFormatoBorderBlack(
+                          context, parametros["fechaFin"]!, "", (String date) {
+                        parametros["fechaFin"]!.text = date;
+                      }),
+                      botonPrimario(context, "Buscar", metodoBuscar!),
+                      SizedBox(height: 10),
+                    ]),
+                  ),
+                  Text(
+                      "Numero de documentos encontrados ${parametros['numeroDocumentos']!.text}"),
                   obtenerListadoDocumentosClinicos(
                       context,
                       nombreDocumento,
-                      diagnosticoPresuntivo,
+                      TextEditingController(),
                       documentos,
-                      metodoBuscar,
-                      metodoEditar,
-                      metodoVerDetalle)
+                      () {}, (idDocumento) {
+                    (metodoEditar != null) ? metodoEditar(idDocumento) : null;
+                  }, (idDocumento) {
+                    (metodoVerDetalle != null)
+                        ? metodoVerDetalle(idDocumento)
+                        : null;
+                  }),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          int numeroPagina =
+                              int.parse(parametros["numeroPagina"]!.text);
+                          if (numeroPagina > 0) {
+                            numeroPagina--;
+                            parametros["numeroPagina"]!.text = '$numeroPagina';
+                            metodoBuscar();
+                          }
+                        },
+                        child: Text('Anterior',
+                            style: TextStyle(color: Colors.black)),
+                      ),
+                      SizedBox(width: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          int numeroPagina =
+                              int.parse(parametros["numeroPagina"]!.text);
+                          numeroPagina++;
+                          parametros["numeroPagina"]!.text = '$numeroPagina';
+                          metodoBuscar();
+                        },
+                        child: Text('Siguiente',
+                            style:
+                                TextStyle(color: Colors.black)), // Texto negro
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -671,26 +1268,26 @@ Widget obtenerListadoDocumentosClinicos(
     String nombreDocumento,
     TextEditingController diagnosticoPresuntivo,
     List documentos,
-    [VoidCallback? metodoBuscar,
+    [Function()? metodoBuscar,
     Function(dynamic)? metodoEditar,
     Function(dynamic)? metodoVerDetalle]) {
   metodoBuscar ??= () {};
   return Column(
     children: [
-      Text(
-        'Diagnóstico presuntivo',
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          color: Colores.color5,
-          fontFamily: 'Inter',
-          fontSize: 12,
-        ),
-      ),
-      SizedBox(height: 5),
-      inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
-      SizedBox(height: 10),
-      botonPrimario(context, "Buscar", metodoBuscar),
-      SizedBox(height: 10),
+      //   Text(
+      //     'Diagnóstico presuntivo',
+      //     textAlign: TextAlign.start,
+      //     style: TextStyle(
+      //       color: Colores.color5,
+      //       fontFamily: 'Inter',
+      //       fontSize: 12,
+      //     ),
+      //   ),
+      //   SizedBox(height: 5),
+      //   inputFormatoBorderBlack(context, diagnosticoPresuntivo, ""),
+      //   SizedBox(height: 10),
+      //   botonPrimario(context, "Buscar", metodoBuscar),
+      //   SizedBox(height: 10),
       Container(
         child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),

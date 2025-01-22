@@ -149,7 +149,7 @@ class SolicitudesInterconsultasController {
       int idSolicitudInterconsulta) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-solicitudes-interconsulta/solicitudes-interconsulta/$idSolicitudInterconsulta",
       );
@@ -205,12 +205,12 @@ class SolicitudesInterconsultasController {
 
   final pdfController = PDFController();
   Future<void> obtenerPDFSolicitudInterconsulta(
-      Map<String, String> historiaClinica) async {
+      Map<String, String> solicitudInterconsulta) async {
     try {
       final token = await authController.obtenerToken();
       final response = await Dio().get(
           'http://${dotenv.env["API_URL"]}/api/microservicio-solicitudes-interconsulta/solicitudes-interconsulta/pdf',
-          queryParameters: historiaClinica,
+          queryParameters: {"id": solicitudInterconsulta['id']},
           options: Options(responseType: ResponseType.bytes, headers: {
             'Authorization': 'Bearer $token',
           }));

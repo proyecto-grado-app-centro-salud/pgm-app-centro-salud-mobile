@@ -147,7 +147,7 @@ class NotasEvolucionController {
   Future<NotaEvolucion> obtenerNotaEvolucion(int idNotaEvolucion) async {
     try {
       final token = await authController.obtenerToken();
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
         "/api/microservicio-historias-clinicas/notas-evolucion/$idNotaEvolucion",
       );
@@ -206,7 +206,7 @@ class NotasEvolucionController {
       final token = await authController.obtenerToken();
       final response = await Dio().get(
           'http://${dotenv.env["API_URL"]}/api/microservicio-historias-clinicas/notas-evolucion/pdf',
-          queryParameters: notaEvolucion,
+          queryParameters: {"id": notaEvolucion['id']},
           options: Options(responseType: ResponseType.bytes, headers: {
             'Authorization': 'Bearer $token',
           }));

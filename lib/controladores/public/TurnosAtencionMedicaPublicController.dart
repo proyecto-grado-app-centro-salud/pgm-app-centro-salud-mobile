@@ -13,7 +13,7 @@ class TurnosAtencionMedicaPublicController {
       'fechaFin': fechaFin,
     };
     final uri = converterController.obtenerUriConParametros(params,
-        "https://${dotenv.env["API_URL"]!}/api/microservicio-gestion-informacion-centro-medico/horarios-atencion-medica");
+        "https://${dotenv.env["API_URL"]!}/api/microservicio-gestion-informacion-centro-medico/publico/horarios-atencion-medica");
 
     final response = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',

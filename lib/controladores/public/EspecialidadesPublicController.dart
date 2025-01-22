@@ -7,9 +7,9 @@ import 'package:proyecto_grado_flutter/modelos/Especialidades.dart';
 class EspecialidadesPublicController {
   Future<List<Especialidad>> obtenerEspecialidades() async {
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
-        "/api/microservicio-gestion-informacion-centro-medico/especialidades",
+        "/api/microservicio-gestion-informacion-centro-medico/publico/especialidades",
       );
       final response = await http.get(
         uri,
@@ -30,9 +30,9 @@ class EspecialidadesPublicController {
 
   obtenerEspecialidad(int idEspecialidad) async {
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         dotenv.env["API_URL"]!,
-        "/api/microservicio-gestion-informacion-centro-medico/especialidades/$idEspecialidad",
+        "/api/microservicio-gestion-informacion-centro-medico/publico/especialidades/$idEspecialidad",
       );
       final response = await http.get(
         uri,
